@@ -1,0 +1,27 @@
+<svg width="520" height="120" viewBox="0 0 520 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon -->
+  <rect x="12" y="12" width="96" height="96" rx="20" fill="#FFFFFF"/>
+  <text
+    x="60"
+    y="78"
+    text-anchor="middle"
+    font-size="36"
+    font-weight="700"
+    font-family="Inter, system-ui, sans-serif"
+    fill="#0F172A"
+  >
+    d<tspan fill="#38BDF8">.</tspan>w
+  </text>
+
+  <!-- Wordmark -->
+  <text
+    x="132"
+    y="78"
+    font-size="44"
+    font-weight="700"
+    font-family="Inter, system-ui, sans-serif"
+    fill="#0F172A"
+  >
+    dispo<tspan fill="#38BDF8">.</tspan>now
+  </text>
+</svg>

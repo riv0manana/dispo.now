@@ -1,0 +1,33 @@
+services:
+  dispo-app:
+    build: .
+    ports:
+      - 8000
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:Test!2026@dispo-db:5432/dispo-now}
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+  dispo-db:
+    image: postgres:15-alpine
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-Test!2026}
+      - POSTGRES_DB=${DB_NAME:-dispo-now}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+volumes:
+  postgres_data:
+
+networks:
+  dokploy-network:
+    external: true
