@@ -1,4 +1,4 @@
-import { OpenAPIHono } from '@hono/zod-openapi'
+import { OpenAPIHono } from 'npm:@hono/zod-openapi'
 import { swaggerUI } from '@hono/swagger-ui'
 import { serveStatic } from 'hono/serve-static'
 import { cors } from 'hono/cors'
