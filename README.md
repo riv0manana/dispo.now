@@ -1,7 +1,7 @@
 # dispo.now
 ### The Headless Booking engine for your product
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![License](https://img.shields.io/badge/license-AGPL--v3-blue.svg)
 ![Status](https://img.shields.io/badge/status-beta-orange.svg)
 ![Stack](https://img.shields.io/badge/stack-Deno_Hono_Postgres-green.svg)
 
