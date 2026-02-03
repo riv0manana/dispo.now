@@ -29,10 +29,10 @@ COPY drizzle.config.ts ./
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 
-# Run db migration
-RUN deno task db:migrate
+# Cache dependencies
+RUN deno cache app/server.ts scripts/migrate.ts
 
 EXPOSE 8000
 
 # start the server
-CMD ["/bin/sh", "-c", "deno task start"]
+CMD ["/bin/sh", "-c", "deno task db:migrate && deno task start"]
