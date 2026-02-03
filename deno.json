@@ -3,12 +3,14 @@
     "test": "deno test --allow-env --allow-read",
     "test:e2e": "DATABASE_URL=postgres://user:pass@localhost:5432/db NODE_ENV=test deno test --no-check -A app/tests/",
     "start": "deno run --allow-env --allow-read --allow-net --watch app/server.ts",
+    "start:prod": "deno run --allow-env --allow-read --allow-net app/server.ts",
     "db:migrate": "deno run -A scripts/migrate.ts",
     "db:seed": "deno run -A scripts/seed_user.ts",
     "db:generate": "deno run -A npm:drizzle-kit generate:pg --config=drizzle.config.ts",
     "build:frontend": "cd frontend && npm install --legacy-peer-deps && npm run build"
   },
   "imports": {
+    "@hono/swagger-ui": "jsr:@hono/swagger-ui@^0.5.3",
     "hono": "npm:hono@^4.0.0",
     "drizzle-orm": "npm:drizzle-orm@^0.29.3",
     "drizzle-kit": "npm:drizzle-kit@^0.20.14",

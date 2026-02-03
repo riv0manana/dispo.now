@@ -1,4 +1,4 @@
-import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
+import { OpenAPIHono, createRoute } from 'npm:@hono/zod-openapi'
 import { z } from '@/app/zod.ts'
 import { container } from '@/container/index.ts'
 import { CreateProjectUseCase } from '@/core/application/usecases/CreateProjectUseCase.ts'

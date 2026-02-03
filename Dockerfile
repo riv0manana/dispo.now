@@ -10,7 +10,7 @@ COPY frontend/ .
 RUN npm run build
 
 # Stage 2: Setup Deno App
-FROM denoland/deno:2.1.4
+FROM denoland/deno:2.6.8
 
 WORKDIR /app
 
@@ -28,13 +28,11 @@ COPY drizzle.config.ts ./
 # Copy built frontend assets
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-# cache the server entry point and migration script to pre-load dependencies
-RUN deno cache app/server.ts scripts/migrate.ts
 
-# Run db migration
-RUN deno task db:migrate
+# Cache dependencies
+RUN deno cache app/server.ts scripts/migrate.ts
 
 EXPOSE 8000
 
 # start the server
-CMD ["/bin/sh", "-c", "deno task start"]
+CMD ["/bin/sh", "-c", "deno task db:migrate && deno task start:prod"]
