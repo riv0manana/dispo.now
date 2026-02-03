@@ -35,4 +35,4 @@ RUN deno cache app/server.ts scripts/migrate.ts
 EXPOSE 8000
 
 # start the server
-CMD ["/bin/sh", "-c", "deno task db:migrate && deno task start"]
+CMD ["/bin/sh", "-c", "deno task db:migrate && deno task start:prod"]

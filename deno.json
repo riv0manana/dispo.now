@@ -3,6 +3,7 @@
     "test": "deno test --allow-env --allow-read",
     "test:e2e": "DATABASE_URL=postgres://user:pass@localhost:5432/db NODE_ENV=test deno test --no-check -A app/tests/",
     "start": "deno run --allow-env --allow-read --allow-net --watch app/server.ts",
+    "start:prod": "deno run --allow-env --allow-read --allow-net app/server.ts",
     "db:migrate": "deno run -A scripts/migrate.ts",
     "db:seed": "deno run -A scripts/seed_user.ts",
     "db:generate": "deno run -A npm:drizzle-kit generate:pg --config=drizzle.config.ts",
