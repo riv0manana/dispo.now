@@ -10,7 +10,7 @@ COPY frontend/ .
 RUN npm run build
 
 # Stage 2: Setup Deno App
-FROM denoland/deno:2.1.4
+FROM denoland/deno:2.6.8
 
 WORKDIR /app
 
