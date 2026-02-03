@@ -9,6 +9,7 @@
     "build:frontend": "cd frontend && npm install --legacy-peer-deps && npm run build"
   },
   "imports": {
+    "@hono/swagger-ui": "jsr:@hono/swagger-ui@^0.5.3",
     "hono": "npm:hono@^4.0.0",
     "drizzle-orm": "npm:drizzle-orm@^0.29.3",
     "drizzle-kit": "npm:drizzle-kit@^0.20.14",

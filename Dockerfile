@@ -28,8 +28,6 @@ COPY drizzle.config.ts ./
 # Copy built frontend assets
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
-# cache the server entry point and migration script to pre-load dependencies
-RUN deno cache app/server.ts scripts/migrate.ts
 
 # Run db migration
 RUN deno task db:migrate
