@@ -12,6 +12,14 @@ It acts as a microservice that you consume via REST API.
 
 ## 2. INTEGRATION FLOW
 
+### SDK Support
+
+We provide an official Node.js SDK to simplify integration:
+
+```bash
+npm install @riv0manana/dispo-now-sdk
+```
+
 ### Phase 1: Onboarding (Management)
 **Context**: Your Backend / Admin Panel
 **Auth**: `Bearer Token`
