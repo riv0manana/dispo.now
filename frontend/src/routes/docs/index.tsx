@@ -25,15 +25,20 @@ const content = {
           dispo.now is a <strong>headless booking kernel</strong> designed for developers. 
           It handles the complex logic of availability, capacity, and scheduling so you don't have to.
         </p>
-        <p>
+        <p className="mb-4">
           The flow is strictly hierarchical: 
           <code className="bg-zinc-800 px-1 py-0.5 rounded mx-1 text-sm">Project</code> → 
           <code className="bg-zinc-800 px-1 py-0.5 rounded mx-1 text-sm">Resource</code> → 
           <code className="bg-zinc-800 px-1 py-0.5 rounded mx-1 text-sm">Booking</code>.
         </p>
+        <p>
+          We provide an official Node.js SDK to simplify integration:
+          <br/>
+          <code className="bg-zinc-800 px-1 py-0.5 rounded text-sm text-emerald-400 mt-2 inline-block">npm install @riv0manana/dispo-now-sdk</code>
+        </p>
       </>
     ),
-    code: null
+    codes: null
   },
   auth: {
     title: "Authentication",
@@ -57,15 +62,33 @@ const content = {
         </p>
       </>
     ),
-    code: {
-      lang: "bash",
-      title: "Headers",
-      content: `// Management (Bearer)
+    codes: [
+      {
+        lang: "bash",
+        title: "Curl / Headers",
+        content: `// Management (Bearer)
 Authorization: Bearer <your_jwt_token>
 
 // Runtime (API Key)
 x-api-key: <your_project_api_key>`
-    }
+      },
+      {
+        lang: "typescript",
+        title: "Node.js SDK",
+        content: `import { DispoClient } from '@riv0manana/dispo-now-sdk';
+
+// Initialize with API Key (Runtime)
+
+const dispo = new DispoClient({
+  apiKey: 'sk_live_...'
+});
+
+// Or with Bearer Token (Management)
+const admin = new DispoClient({
+  bearerToken: 'ey...'
+});`
+      }
+    ]
   },
   users: {
     title: "Users",
@@ -81,10 +104,11 @@ x-api-key: <your_project_api_key>`
         <p className="mb-4">Authenticate to receive a JWT token.</p>
       </>
     ),
-    code: {
-      lang: "json",
-      title: "User Operations",
-      content: `// POST /users (Register)
+    codes: [
+      {
+        lang: "json",
+        title: "JSON Payload",
+        content: `// POST /users (Register)
 {
   "email": "dev@example.com",
   "password": "securepassword"
@@ -100,7 +124,23 @@ x-api-key: <your_project_api_key>`
 {
   "token": "ey..."
 }`
-    }
+      },
+      {
+        lang: "typescript",
+        title: "Node.js SDK",
+        content: `// Register
+const user = await client.register(
+  'dev@example.com', 
+  'securepassword'
+);
+
+// Login
+const { token } = await client.login(
+  'dev@example.com', 
+  'securepassword'
+);`
+      }
+    ]
   },
   projects: {
     title: "Projects",
@@ -118,10 +158,11 @@ x-api-key: <your_project_api_key>`
         </ul>
       </>
     ),
-    code: {
-      lang: "json",
-      title: "Project Operations",
-      content: `// POST /projects
+    codes: [
+      {
+        lang: "json",
+        title: "JSON Payload",
+        content: `// POST /projects
 {
   "name": "My SaaS Tenant",
   "metadata": { "plan": "premium" }
@@ -132,21 +173,23 @@ x-api-key: <your_project_api_key>`
   "id": "proj_123",
   "name": "My SaaS Tenant",
   "apiKey": "sk_live_..." // Save this!
-}
-
-// GET /projects
-[
-  {
-    "id": "proj_123",
-    "name": "My SaaS Tenant"
-  }
-]
-
-// PATCH /projects/proj_123
-{
-  "name": "Updated Tenant Name"
 }`
-    }
+      },
+      {
+        lang: "typescript",
+        title: "Node.js SDK",
+        content: `// Create Project
+const project = await admin.createProject(
+  'My SaaS Tenant',
+  { plan: 'premium' }
+);
+
+console.log(project.apiKey); // sk_live_...
+
+// List Projects
+const projects = await admin.getProjects();`
+      }
+    ]
   },
   resources: {
     title: "Resources",
@@ -163,10 +206,11 @@ x-api-key: <your_project_api_key>`
         </ul>
       </>
     ),
-    code: {
-      lang: "json",
-      title: "Resource Operations",
-      content: `// POST /resources
+    codes: [
+      {
+        lang: "json",
+        title: "JSON Payload",
+        content: `// POST /resources
 {
   "name": "Conference Room A",
   "defaultCapacity": 10,
@@ -175,19 +219,22 @@ x-api-key: <your_project_api_key>`
     "daily": { "start": "09:00", "end": "17:00" },
     "weekly": { "availableDays": [1, 2, 3, 4, 5] }
   }
-}
-
-// PATCH /resources/res_456
-{
-  "defaultCapacity": 20,
-  "bookingConfig": {
-    "daily": { "start": "08:00", "end": "18:00" }
+}`
+      },
+      {
+        lang: "typescript",
+        title: "Node.js SDK",
+        content: `const resource = await dispo.createResource({
+  name: 'Conference Room A',
+  defaultCapacity: 10,
+  metadata: { floor: 2 },
+  bookingConfig: {
+    daily: { start: '09:00', end: '17:00' },
+    weekly: { availableDays: [1, 2, 3, 4, 5] }
   }
-}
-
-// DELETE /resources/res_456
-// Response: 200 OK`
-    }
+});`
+      }
+    ]
   },
   availability: {
     title: "Availability",
@@ -222,22 +269,17 @@ x-api-key: <your_project_api_key>`
         </p>
       </>
     ),
-    code: {
-      lang: "json",
-      title: "Get Availability",
-      content: `// GET /resources/:id/availability
-// ?start=2024-01-01T00:00:00Z
-// &end=2024-01-01T23:59:59Z
-// &slotDurationMinutes=60
-
-// Resource Config:
-// - Daily: 09:00 - 17:00
-// - Capacity: 5
-// - Existing Booking: 10:00-11:00 (Qty: 3)
+    codes: [
+      {
+        lang: "json",
+        title: "REST / Curl",
+        content: `GET /resources/:id/availability
+?start=2024-01-01T00:00:00Z
+&end=2024-01-01T23:59:59Z
+&slotDurationMinutes=60
 
 // Response (200 OK)
 [
-  // 00:00 - 09:00 omitted (Closed)
   {
     "start": "2024-01-01T09:00:00Z",
     "end": "2024-01-01T10:00:00Z",
@@ -247,15 +289,20 @@ x-api-key: <your_project_api_key>`
     "start": "2024-01-01T10:00:00Z",
     "end": "2024-01-01T11:00:00Z",
     "available": 2 // 5 - 3 = 2
-  },
-  {
-    "start": "2024-01-01T11:00:00Z",
-    "end": "2024-01-01T12:00:00Z",
-    "available": 5
   }
-  // ... until 17:00
 ]`
-    }
+      },
+      {
+        lang: "typescript",
+        title: "Node.js SDK",
+        content: `const slots = await dispo.getAvailability(
+  'resource_123',
+  '2024-01-01T00:00:00Z',
+  '2024-01-01T23:59:59Z',
+  60 // slot duration in minutes
+);`
+      }
+    ]
   },
   bookings: {
     title: "Bookings",
@@ -285,10 +332,11 @@ x-api-key: <your_project_api_key>`
         </p>
       </>
     ),
-    code: {
-      lang: "json",
-      title: "Bookings Operations",
-      content: `// POST /bookings (Single)
+    codes: [
+      {
+        lang: "json",
+        title: "JSON Payload",
+        content: `// POST /bookings (Single)
 {
   "resourceId": "res_456",
   "start": "2024-01-01T10:00:00Z",
@@ -302,40 +350,37 @@ x-api-key: <your_project_api_key>`
   "bookings": [
     {
       "resourceId": "res_A",
-      "start": "2024-01-01T10:00:00Z",
-      "end": "2024-01-01T11:00:00Z",
-      "quantity": 1
+      ...
     },
     {
       "resourceId": "res_B",
-      "start": "2024-01-01T10:00:00Z",
-      "end": "2024-01-01T11:00:00Z",
-      "quantity": 2
+      ...
     }
   ]
-}
+}`
+      },
+      {
+        lang: "typescript",
+        title: "Node.js SDK",
+        content: `// Single Booking
+await dispo.createBooking({
+  resourceId: 'res_456',
+  start: '2024-01-01T10:00:00Z',
+  end: '2024-01-01T11:00:00Z',
+  quantity: 1,
+  metadata: { bookedBy: 'user@example.com' }
+});
 
-// POST /bookings/recurring (Atomic Series)
-{
-  "resourceId": "res_456",
-  "start": "2024-02-01T10:00:00Z", // Start of FIRST slot
-  "end": "2024-02-01T11:00:00Z",   // End of FIRST slot
-  "quantity": 1,
-  "recurrence": {
-    "frequency": "weekly",
-    "interval": 1,
-    "count": 4 // Repeat for 4 weeks
-  }
-}
-
-// Response (Recurring - 201 Created)
-[
-  "book_123",
-  "book_124",
-  "book_125",
-  "book_126"
-]`
-    }
+// Group Booking (Atomic)
+await dispo.createGroupBooking({
+  projectId: 'proj_123',
+  bookings: [
+    { resourceId: 'res_A', ... },
+    { resourceId: 'res_B', ... }
+  ]
+});`
+      }
+    ]
   },
   errors: {
     title: "Errors",
@@ -364,43 +409,64 @@ x-api-key: <your_project_api_key>`
         </div>
       </>
     ),
-    code: {
-      lang: "json",
-      title: "Error Response",
-      content: `{
+    codes: [
+      {
+        lang: "json",
+        title: "Error Response",
+        content: `{
   "error": "CapacityExceeded"
 }`
-    }
+      }
+    ]
   }
 };
 
-function CodeBlock({ code }: { code: { lang: string, title: string, content: string } }) {
+function CodeBlock({ codes }: { codes: { lang: string, title: string, content: string }[] }) {
+  const [activeTab, setActiveTab] = useState(0);
   const [copied, setCopied] = useState(false);
+  
+  const activeCode = codes[activeTab];
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code.content);
+    navigator.clipboard.writeText(activeCode.content);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="rounded-lg overflow-hidden bg-[#1e1e1e] border border-zinc-800 shadow-2xl">
-      <div className="flex items-center justify-between px-4 py-2 bg-[#252526] border-b border-zinc-800">
-        <span className="text-xs font-mono text-zinc-400">{code.title}</span>
-        <button onClick={handleCopy} className="text-zinc-500 hover:text-white transition-colors">
+      <div className="flex items-center bg-[#252526] border-b border-zinc-800">
+        {codes.map((code, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveTab(index)}
+            className={cn(
+              "px-4 py-2 text-xs font-mono border-r border-zinc-800 transition-colors",
+              activeTab === index 
+                ? "bg-[#1e1e1e] text-emerald-400 border-b-2 border-b-emerald-400 -mb-px" 
+                : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+            )}
+          >
+            {code.title}
+          </button>
+        ))}
+        <div className="flex-1"></div>
+        <button onClick={handleCopy} className="p-2 text-zinc-500 hover:text-white transition-colors">
           {copied ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
-      <div className="p-4 overflow-x-auto">
+      <div className="p-4 overflow-x-auto min-h-[150px]">
         <pre className="font-mono text-sm leading-relaxed text-zinc-300">
-          <code>
-            {code.content.split('\n').map((line, i) => (
+          <code className="table w-full">
+            {activeCode.content.split('\n').map((line, i) => (
               <div key={i} className="table-row">
-                <span className="table-cell text-zinc-700 select-none pr-4 text-right w-8">{i + 1}</span>
-                <span className="table-cell">
-                  <span dangerouslySetInnerHTML={{__html: line
-                    .replace(/"(.*?)"/g, '<span class="text-emerald-300">"$1"</span>')
-                    .replace(/\/\/.*/g, '<span class="text-zinc-500">$&</span>')
+                <span className="table-cell text-zinc-700 select-none pr-4 text-right w-8 align-top">{i + 1}</span>
+                <span className="table-cell align-top">
+                  <span dangerouslySetInnerHTML={{__html: (line || ' ')
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/\b(import|from|const|await|new|return|export|default|function|class)\b/g, '<span class="text-purple-400">$1</span>')
                   }} />
                 </span>
               </div>
@@ -486,9 +552,9 @@ export function DocsRoute() {
 
                   {/* Right: Code */}
                   <div className="py-16 px-8 bg-[#09090b] border-l border-zinc-800/50">
-                    {data.code && (
+                    {data.codes && (
                       <div className="sticky top-24">
-                        <CodeBlock code={data.code} />
+                        <CodeBlock codes={data.codes} />
                       </div>
                     )}
                   </div>

@@ -50,6 +50,11 @@ Our engine adapts to your domain model:
 *   [**API Reference**](./API.md): Detailed endpoint documentation.
 *   [**Developer Experience**](./DX.md): Integration guides and best practices.
 
+### 📦 SDKs
+
+*   **Node.js**: [`@riv0manana/dispo-now-sdk`](https://www.npmjs.com/package/@riv0manana/dispo-now-sdk)
+
+
 ---
 
 ## 📄 License & Commercial Use
