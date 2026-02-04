@@ -30,20 +30,18 @@ dispo.now Developer Console
 
 # 1️⃣ LANDING PAGE (FOR DEVELOPERS)
 
-**Purpose**: explain *what it is* in one screen.
+**Purpose**: Position dispo.now as "Infrastructure", not "SaaS".
 
 ### Hero
 
 ```
-dispo.now
-The Booking Infrastructure for your product.
-No overbooking. Ever.
+The Self-Hosted Booking Infrastructure.
+Stop paying the "SaaS Tax" for booking APIs.
 ```
 
 **Sub**
-
-> Book anything. Rooms, people, assets, time slots.
-> Deterministic. Capacity-safe. API-First.
+> Own your data. Unlimited scale. ACID transactions.
+> The open-source engine for high-performance scheduling.
 
 ### Code snippet (THIS IS IMPORTANT)
 

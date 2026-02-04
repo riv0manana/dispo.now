@@ -8,10 +8,10 @@ interface SEOProps {
 }
 
 export function SEO({ 
-  title = "dispo.now | Headless Self-Hosted Booking Engine", 
-  description = "The headless booking kernel for developers. Deterministic, capacity-safe, and resource-agnostic booking engine.",
-  keywords = ["booking engine", "headless booking", "scheduling api", "capacity management", "developer tools"],
-  canonicalUrl = "https://dispo.now"
+  title = "dispo.now | The Self-Hosted Booking Infrastructure", 
+  description = "Stop paying the SaaS tax. The open-source, ACID-compliant booking infrastructure for developers. Own your data, scale unlimitedly, and eliminate race conditions.",
+  keywords = ["booking infrastructure", "self-hosted booking", "open source scheduling", "acid transactions", "booking api", "capacity management", "developer tools"],
+  canonicalUrl = "https://dispo-now.riv0manana.dev"
 }: SEOProps) {
   return (
     <Helmet>
