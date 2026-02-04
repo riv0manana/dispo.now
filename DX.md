@@ -1,12 +1,18 @@
 # DEVELOPER EXPERIENCE (DX) GUIDE
 
-## 1. PHILOSOPHY: THE HEADLESS BOOKING KERNEL
+## 1. PHILOSOPHY: THE POSTGRES OF BOOKING ENGINES
 
-**dispo.now** is a "Booking Kernel". It is designed to be the invisible engine behind your custom application.
+**dispo.now** is not a SaaS API. It is **Booking Infrastructure**.
+
+Think of it like Postgres or Redis:
+*   You don't "sign up" for it; you `docker run` it.
+*   You don't pay per request; you pay for your own server.
+*   You don't send data to a 3rd party; it lives in your VPC.
+
+It is designed to be the invisible, ACID-compliant engine behind your custom application.
+
 *   **You build the UI**: The calendar, the booking form, the payment flow.
-*   **We handle the Logic**: Availability, Capacity, Concurrency, and Validation.
-
-It acts as a microservice that you consume via REST API.
+*   **We handle the Hard Stuff**: Availability, Capacity, Concurrency, and Transactions.
 
 ---
 
