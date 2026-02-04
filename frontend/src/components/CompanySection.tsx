@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router"
 import { Check, Server } from "lucide-react"
 
 const CompanySection = () => {
@@ -29,15 +28,15 @@ const CompanySection = () => {
                             <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
                                 <Check size={14} className="text-emerald-500" />
                             </div>
+                            Webhook Events & Alerts
+                        </li>
+                        <li className="flex items-center gap-3 text-zinc-300">
+                            <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                <Check size={14} className="text-emerald-500" />
+                            </div>
                             Custom Feature Development
                         </li>
                     </ul>
-                    <Link
-                        to="mailto:contact@riv0manana.dev"
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-lg hover:bg-zinc-200 transition-colors"
-                    >
-                        Contact Sales
-                    </Link>
                 </div>
 
                 <div className="relative">
