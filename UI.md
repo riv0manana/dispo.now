@@ -36,14 +36,14 @@ dispo.now Developer Console
 
 ```
 dispo.now
-The Headless Booking engine for your product.
+The Booking Infrastructure for your product.
 No overbooking. Ever.
 ```
 
 **Sub**
 
 > Book anything. Rooms, people, assets, time slots.
-> Deterministic. Capacity-safe. Headless.
+> Deterministic. Capacity-safe. API-First.
 
 ### Code snippet (THIS IS IMPORTANT)
 

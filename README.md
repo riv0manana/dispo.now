@@ -1,5 +1,5 @@
 # dispo.now
-### The Headless Booking engine for your product
+### The Booking Infrastructure for your product
 
 ![License](https://img.shields.io/badge/license-AGPL--v3-blue.svg)
 ![Status](https://img.shields.io/badge/status-beta-orange.svg)
@@ -13,42 +13,22 @@
 
 ## 🚀 Why dispo.now?
 
-Most booking systems are built for **meetings** (Calendly, Cal.com). They are great if you want to schedule a call, but they struggle when you need to model complex real-world resources.
+Building a robust booking system is deceptively difficult. It starts with a simple `start` and `end` date, but quickly evolves into a nightmare of:
+*   **Concurrency**: Preventing race conditions when two users book the same slot instantly.
+*   **Atomicity**: Ensuring multi-resource bookings (e.g., Room + Equipment) either fully succeed or fully fail.
+*   **Complex Recurrence**: Handling repeating patterns without exploding your database.
 
-`dispo.now` is different. It is **Resource Agnostic**. It doesn't know what a "meeting" is. It only knows that *Resource X* has *Capacity Y* at *Time Z*.
+`dispo.now` solves these hard problems out of the box. It is **Resource Agnostic**: it doesn't know what a "meeting" is. It only knows that *Resource X* has *Capacity Y* at *Time Z*.
 
 ### ⚡ For Developers
-*   **Headless Architecture**: We provide the API. You build the UI. No fighting with iframe styles.
+*   **API-First Architecture**: We provide the API. You build the UI.
 *   **Atomic Transactions**: Need to book a Doctor AND a Room at the same time? We handle the atomicity. If one fails, both fail.
 *   **Developer Experience**: Typed API, OpenAPI specs, and a simple hierarchical model (Project -> Resource -> Booking).
 
 ### 🏢 For Companies
 *   **100% Data Ownership**: Self-hosted. Your customer data never leaves your infrastructure.
-*   **White-Label Ready**: Since it's headless, your customers never see our brand. It looks and feels exactly like your product.
+*   **White-Label Ready**: Since it's API-first, your customers never see our brand. It looks and feels exactly like your product.
 *   **Multi-Tenant by Design**: Built to power SaaS platforms. Isolate your customers (tenants) with strict project-level boundaries.
-
----
-
-## 🆚 Comparison
-
-| Feature | **dispo.now** | Cal.com / Calendly | Custom Build |
-| :--- | :--- | :--- | :--- |
-| **Primary Focus** | **Generic Resources** (Assets, Rooms, API Usage, Time) | **Meetings** (People & Calendars) | Anything |
-| **User Interface** | **Headless** (100% Customizable) | Pre-built (Rigid) | You build it |
-| **Logic** | **Capacity & Concurrency** | Scheduling & Availability | You write it (Hard) |
-| **Deployment** | **Self-Hosted / Docker** | SaaS / Open Core | Self-Hosted |
-| **Multi-Tenant** | **Native** (Projects) | Enterprise / Teams | You build it |
-| **Speed to Market** | ⚡ **Fast** | ⚡ Fast (for meetings) | 🐢 Slow |
-
-**Choose dispo.now if:**
-*   You are building a marketplace (e.g., "Airbnb for X").
-*   You need to manage physical inventory (rentals, equipment).
-*   You are building a vertical SaaS (e.g., for Salons, Gyms, Clinics).
-*   You need complex transaction rules (Group Bookings).
-
-**Choose Cal.com if:**
-*   You just need a link to schedule Zoom calls.
-*   You want a ready-made UI that you don't have to code.
 
 ---
 

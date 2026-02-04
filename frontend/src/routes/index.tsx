@@ -60,9 +60,9 @@ export function LandingRoute() {
                 variants={fadeInUp}
                 className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
               >
-                The Headless <br />
+                The Booking <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-                  Booking Engine.
+                  Infrastructure.
                 </span>
               </motion.h1>
 
