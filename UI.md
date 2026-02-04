@@ -19,6 +19,7 @@ dispo.now Developer Console
 │   │       ├── API Keys
 │   │       ├── Resources
 │   │       ├── Bookings (Explorer)
+│   │       ├── Availability (Tester)
 │   │       ├── Playground
 │   │       ├── Logs
 │   │       └── Settings
@@ -76,13 +77,18 @@ A Project represents your app / tenant / SaaS customer.
 ```
 
 Button:
-👉 **Create Project**
+👉 **New Project**
+
+**Implementation Reference**:
+*   `frontend/src/routes/dashboard/index.tsx`
+*   `frontend/src/components/templates/DashboardTemplate.tsx`
+*   `frontend/src/components/ui/organisms/ProjectEmptyState.tsx`
 
 ---
 
 # 3️⃣ PROJECT LIST
 
-Simple, boring, predictable (this is good):
+Simple, boring, predictable:
 
 ```
 Projects
@@ -90,6 +96,10 @@ Projects
 • My SaaS App        → Open
 • Internal Tools    → Open
 ```
+
+**Implementation Reference**:
+*   `frontend/src/routes/dashboard/index.tsx`
+*   `frontend/src/components/ui/organisms/ProjectList.tsx`
 
 ---
 
@@ -105,7 +115,12 @@ API Key: sk_live_********
 [ Copy ] [ Rotate ]
 ```
 
-⚠️ Show the API key **once**, warn clearly (same as API.md )
+⚠️ Show the API key, warn clearly (same as API.md )
+
+**Implementation Reference**:
+*   `frontend/src/routes/dashboard/project.tsx`
+*   `frontend/src/components/templates/ProjectDetailTemplate.tsx`
+*   `frontend/src/components/ui/organisms/ProjectHeader.tsx`
 
 ---
 
@@ -123,7 +138,7 @@ Rooms, cars, doctors, machines, time slots.
 ```
 
 Button:
-👉 **Create Resource**
+👉 **New Resource**
 
 ### Create Resource Modal
 
@@ -134,6 +149,9 @@ Button:
   "metadata": {
     "floor": 2,
     "type": "room"
+  },
+  "bookingConfig": {
+     "daily": { "start": "09:00", "end": "18:00" }
   }
 }
 ```
@@ -143,9 +161,9 @@ Button:
 * live Zod validation errors
 * schema preview (read-only)
 
-This reinforces:
-
-> **Zod = single source of truth** 
+**Implementation Reference**:
+*   `frontend/src/components/ui/organisms/ResourceList.tsx`
+*   `frontend/src/components/ui/organisms/ResourceForm.tsx` (Zod validation here)
 
 ---
 
@@ -161,9 +179,12 @@ This is **not for end-users**, it’s for **developers testing behavior**.
 
 ### Result
 
-* Timeline view
 * List view
 * Status badges: `active` / `cancelled`
+
+### Actions
+* **Create Booking** (Single)
+* **Create Group Booking** (Atomic)
 
 ### When capacity is exceeded:
 
@@ -174,9 +195,33 @@ This resource is fully booked for this time range.
 
 Exactly matches your domain error model.
 
+**Implementation Reference**:
+*   `frontend/src/components/ui/organisms/BookingList.tsx`
+*   `frontend/src/components/ui/organisms/BookingCreationPanel.tsx`
+*   `frontend/src/components/ui/organisms/GroupBookingCreationPanel.tsx`
+
 ---
 
-## 4.3 🧪 API PLAYGROUND (CRITICAL)
+## 4.3 🧪 AVAILABILITY TAB (TESTER)
+
+Visualizes availability slots based on capacity and configuration.
+
+### Controls
+* Resource selector
+* Date picker
+* Slot duration (e.g., 60 mins)
+
+### Result
+* Grid of time slots
+* **Green**: Available
+* **Red**: Booked / Closed
+
+**Implementation Reference**:
+*   `frontend/src/components/ui/organisms/AvailabilityViewer.tsx`
+
+---
+
+## 4.4 🧪 API PLAYGROUND (CRITICAL)
 
 This is where onboarding becomes *effortless*.
 
@@ -219,7 +264,7 @@ Generated automatically.
 
 ---
 
-## 4.4 📜 LOGS TAB
+## 4.5 📜 LOGS TAB
 
 Developers *love* this.
 
@@ -237,7 +282,7 @@ Each log expandable:
 
 ---
 
-## 4.5 📘 CONTEXTUAL DOCS
+## 4.6 📘 CONTEXTUAL DOCS
 
 Docs should **change depending on where the dev is**.
 
@@ -250,19 +295,36 @@ This UI literally *teaches* the backend.
 
 ---
 
-# 5️⃣ ONBOARDING CHECKLIST (TOP RIGHT)
+# 5️⃣ COMPONENT HIERARCHY
 
-Sticky progress indicator:
+Strict Atomic Design structure enforced in `frontend/src/components/ui`:
 
-```
-✓ Create Project
-✓ Create Resource
-⬜ Create Booking
-⬜ Handle CapacityExceeded
-```
+### 🧬 Atoms (`/atoms`)
+*   `Button.tsx`: Primary, secondary, danger actions.
+*   `Input.tsx`: Standard text/number inputs.
+*   `Select.tsx`: Dropdowns.
+*   `Badge.tsx`: Status indicators (active/cancelled).
+*   `Card.tsx`: Container for lists and forms.
 
-When all done:
-🎉 **You’re production-ready**
+### 🧬 Molecules (`/molecules`)
+*   `ApiKeyDisplay.tsx`: Securely display/copy API keys.
+*   `ProjectInfo.tsx`: Summary of project details.
+*   `FormField.tsx`: Label + Input + Error wrapper.
+*   `PageHeader.tsx`: Title + Action button.
+
+### 🧬 Organisms (`/organisms`)
+*   `ProjectList.tsx`: Grid of project cards.
+*   `ProjectForm.tsx`: Create/Edit project logic.
+*   `ResourceList.tsx`: List of resources with edit/delete actions.
+*   `ResourceForm.tsx`: Complex form for Resource + Config + Metadata.
+*   `BookingList.tsx`: Table of bookings for a resource.
+*   `BookingCreationPanel.tsx`: Form to test single bookings.
+*   `GroupBookingCreationPanel.tsx`: Form to test atomic group bookings.
+*   `AvailabilityViewer.tsx`: Visual grid of available slots.
+
+### 📄 Templates (`/templates`)
+*   `DashboardTemplate.tsx`: Sidebar + Content area layout.
+*   `ProjectDetailTemplate.tsx`: Project Header + Tabs layout.
 
 ---
 
@@ -281,25 +343,12 @@ Think:
 
 ---
 
-# 7️⃣ TECH STACK SUGGESTION (OPTIONAL)
+# 7️⃣ TECH STACK SUGGESTION
 
-Since you’re already Vite + React:
-
-* React + TanStack Router
-* React Query
-* Monaco Editor (payloads)
-* Zod schemas imported directly from `core`
-* Same types everywhere (true full-stack TS)
-* framer-motion: landing page design, auto animated presentation block guide
-
----
-
-## 🚀 Result
-
-With this UI:
-
-* Your backend feels **simple**, not strict
-* Developers understand **Project → Resource → Booking** instantly
-* Capacity rules become obvious, not scary
-* dispo.now feels **enterprise-grade**, not “just an API”
+* React + TanStack Router (File-based routing)
+* React Query (Data fetching & caching)
+* Tailwind CSS (Styling)
+* Framer Motion (Subtle transitions)
+* Lucide React (Icons)
+* Date-fns (Date manipulation)
 
