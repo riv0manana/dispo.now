@@ -38,8 +38,16 @@ dispo.now/
 │  │  ├─ capacity/
 │  │  │  ├─ Capacity.schema.ts
 │  │  │
+│  │  ├─ recurrence/
+│  │  │  ├─ Recurrence.schema.ts
+│  │  │  ├─ Recurrence.logic.ts
+│  │  │
+│  │  ├─ user/
+│  │  │  ├─ User.schema.ts
+│  │  │
 │  │  ├─ policy/
 │  │  │  ├─ CapacityPolicy.ts
+│  │  │  ├─ BookingConfigPolicy.ts
 │  │  │
 │  │  └─ index.ts                     # domain public exports
 │  │
@@ -49,13 +57,30 @@ dispo.now/
 │  │  │  ├─ BookingRepository.ts
 │  │  │  ├─ ProjectRepository.ts
 │  │  │  ├─ ResourceRepository.ts
+│  │  │  ├─ UserRepository.ts
 │  │  │  ├─ IdGenerator.ts
+│  │  │  ├─ PasswordService.ts
+│  │  │  ├─ TokenService.ts
+│  │  │  ├─ ApiKeyGenerator.ts
 │  │  │
 │  │  ├─ usecases/                    # APPLICATION SERVICES
+│  │  │  ├─ CreateUserUseCase.ts
+│  │  │  ├─ LoginUserUseCase.ts
 │  │  │  ├─ CreateProjectUseCase.ts
+│  │  │  ├─ GetProjectsUseCase.ts
+│  │  │  ├─ UpdateProjectUseCase.ts
+│  │  │  ├─ DeleteProjectUseCase.ts
 │  │  │  ├─ CreateResourceUseCase.ts
+│  │  │  ├─ GetResourcesUseCase.ts
+│  │  │  ├─ UpdateResourceUseCase.ts
+│  │  │  ├─ DeleteResourceUseCase.ts
 │  │  │  ├─ CreateBookingUseCase.ts
+│  │  │  ├─ CreateGroupBookingUseCase.ts
+│  │  │  ├─ CreateRecurringBookingUseCase.ts
+│  │  │  ├─ GetBookingsUseCase.ts
+│  │  │  ├─ GetAvailabilityUseCase.ts
 │  │  │  ├─ CancelBookingUseCase.ts
+│  │  │  ├─ VerifyApiKeyUseCase.ts
 │  │  │
 │  │  └─ index.ts                     # application exports
 │  │
@@ -65,38 +90,53 @@ dispo.now/
 │  │  │  ├─ FakeBookingRepository.ts
 │  │  │  ├─ FakeProjectRepository.ts
 │  │  │  ├─ FakeResourceRepository.ts
+│  │  │  ├─ FakeUserRepository.ts
+│  │  │  ├─ FakePasswordService.ts
+│  │  │  ├─ FakeTokenService.ts
 │  │  │
 │  │  ├─ usecases/
 │  │  │  ├─ CreateProjectUseCase.test.ts
 │  │  │  ├─ CreateResourceUseCase.test.ts
 │  │  │  ├─ CreateBookingUseCase.test.ts
 │  │  │  ├─ CreateBookingScenarios.test.ts
+│  │  │  ├─ GroupBooking.test.ts
 │  │  │  ├─ CancelBookingUseCase.test.ts
+│  │  │  ├─ Security.test.ts
+│  │  │  ├─ ... (other use case tests)
 │  │  │
-│  │  └─ domain/
-│  │     ├─ TimeRange.test.ts
-│  │     ├─ CapacityPolicy.test.ts
+│  │  ├─ domain/
+│  │  │  ├─ TimeRange.test.ts
+│  │  │  ├─ CapacityPolicy.test.ts
+│  │  │  ├─ Validation.test.ts
+│  │  │
+│  │  └─ index.ts                        # core public API
 │  │
-│  └─ index.ts                        # core public API
+│  └─ container/                         # DEPENDENCY INJECTION
+│     │
+│     ├─ container.ts                    # Ioctopus bindings
+│     │
+│     └─ index.ts
 │
 ├─ infrastructure/                    # ADAPTERS (TECH-SPECIFIC)
 │  │
-│  ├─ db/
-│  │  ├─ schema.ts                    # drizzle schemas
-│  │  ├─ client.ts                    # drizzle postgres client
+│  ├─ database/
+│  │  ├─ postgres/
+│  │  │  ├─ drizzle/                 # migrations
+│  │  │  ├─ schema.ts                # drizzle schemas
+│  │  │
+│  │  ├─ client.ts                   # drizzle postgres client
 │  │
 │  ├─ repositories/
 │  │  ├─ DrizzleBookingRepository.ts
 │  │  ├─ DrizzleProjectRepository.ts
 │  │  ├─ DrizzleResourceRepository.ts
+│  │  ├─ DrizzleUserRepository.ts
+│  │
+│  ├─ services/
+│  │  ├─ BcryptPasswordService.ts
+│  │  ├─ HonoJwtTokenService.ts
 │  │
 │  └─ index.ts                        # infra exports
-│
-├─ container/                         # DEPENDENCY INJECTION
-│  │
-│  ├─ container.ts                    # Ioctopus bindings
-│  │
-│  └─ index.ts
 │
 ├─ app/                               # APPLICATION ENTRY (DENO + HONO)
 │  │
@@ -105,18 +145,40 @@ dispo.now/
 │  │  │  ├─ bookings.ts               # HTTP → use cases
 │  │  │  ├─ projects.ts
 │  │  │  ├─ resources.ts
+│  │  │  ├─ users.ts
 │  │  │
 │  │  ├─ middlewares/
 │  │  │  ├─ apiKey.ts
+│  │  │  ├─ auth.ts
+│  │  │  ├─ hybridAuth.ts
 │  │  │
-│  │  └─ http.ts                      # hono instance
+│  │  ├─ http.ts                      # hono instance
+│  │  ├─ openapi.ts                   # swagger config
+│  │  ├─ types.ts
+│  │  ├─ zod.ts                       # zod config
+│  │
+│  ├─ tests/                          # E2E TESTS
+│  │  ├─ e2e.test.ts
+│  │  ├─ e2e_features.test.ts
 │  │
 │  ├─ server.ts                       # bootstrap server
 │  │
 │  └─ index.ts
 │
+├─ frontend/                          # REACT UI
+│  ├─ src/
+│  │  ├─ components/
+│  │  ├─ lib/
+│  │  ├─ routes/
+│  │  ├─ main.tsx
+│  │
+│  ├─ package.json
+│  ├─ vite.config.ts
+│
 ├─ scripts/
 │  ├─ migrate.ts                      # drizzle migrations
+│  ├─ seed_user.ts
+│  ├─ verify_e2e.ts
 │
 ├─ deno.json
 ├─ deno.lock
@@ -152,7 +214,6 @@ dispo.now/
 ### 3. `application/`
 
 * Use cases depend only on:
-
   * domain
   * ports
 * No infrastructure imports
@@ -204,6 +265,7 @@ dispo.now/
 | infrastructure | Persistence    |
 | container      | Wiring         |
 | app            | Delivery       |
+| frontend       | Consumption    |
 
 ---
 
@@ -217,4 +279,3 @@ This structure ensures:
 * Easy onboarding
 * Safe scaling
 
-This is **final** and ready to be enforced in CI.
