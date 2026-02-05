@@ -93,10 +93,7 @@ To ensure we can continue to offer dual-licensing options, all contributors must
 Building and maintaining a concurrency-safe engine takes time and coffee. If `dispo.now` saves you weeks of development time, consider supporting us!
 I'd love to be fully self-sustained, so any sponsorship would be greatly appreciated.
 
-*   **GitHub Sponsors**: [Become a Sponsor](https://github.com/sponsors/riv0manana)
-*   **BTC**: 1MandaXbY4FqSaKxHnWuakmCC8JpBZAoAG
-*   **ETH**: 0xe592DDAF3e69BC213eA62cA698C68D449bbBe4D9
-*   ****
+[*   **Buy Me a Coffee**: [Become a Sponsor]([https://github.com/sponsors/riv0manana](https://buymeacoffee.com/riv0manana))](https://buymeacoffee.com/riv0manana)
 
 ### Contributing
 We welcome contributions! Whether it's fixing a bug, adding a new database adapter, or improving documentation.
