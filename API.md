@@ -1,7 +1,7 @@
 # API Reference
 
 **Base URL**: `/`
-**Version**: `1.0.beta-01`
+**Version**: `1.0.1-beta.1`
 **Content-Type**: `application/json`
 
 ---
