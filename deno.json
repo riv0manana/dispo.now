@@ -27,5 +27,6 @@
   },
   "compilerOptions": {
     "strict": true
-  }
+  },
+  "nodeModulesDir": "auto"
 }
