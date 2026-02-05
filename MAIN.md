@@ -143,6 +143,12 @@ Implemented via `hybridAuthMiddleware`.
 *   Routes defined using `@hono/zod-openapi`.
 *   Validation is strictly tied to Zod schemas shared with the Core.
 
+### 6.4 Model Context Protocol (MCP)
+*   **Purpose**: Native integration with AI Agents (LLMs).
+*   **Protocol**: MCP (Model Context Protocol) via SSE (Server-Sent Events).
+*   **Activation**: Enabled via `MCP_SERVER` environment variable.
+*   **Capabilities**: Exposes Core Use Cases (`CreateBooking`, `GetResources`, etc.) as AI-callable Tools.
+
 ---
 
 ## 7. DEPLOYMENT
