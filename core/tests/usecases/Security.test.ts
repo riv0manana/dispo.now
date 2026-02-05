@@ -4,11 +4,13 @@ import { CancelBookingUseCase } from '@/core/application/usecases/CancelBookingU
 import { GetBookingsUseCase } from '@/core/application/usecases/GetBookingsUseCase.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 Deno.test('Security: Cannot create booking for resource belonging to another project', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'b1' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'b1' }, new FakeTransactionManager(), new FakeLockService())
 
   // Resource belongs to Project A
   await resourceRepo.save({

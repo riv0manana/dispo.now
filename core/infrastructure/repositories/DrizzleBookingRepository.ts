@@ -2,6 +2,7 @@ import { BookingRepository } from '@/core/application/ports/BookingRepository.ts
 import { Booking } from '@/core/domain/booking/Booking.schema.ts';
 import { TimeRange } from '@/core/domain/time-range/TimeRange.schema.ts';
 import { db, schema } from '@/infra/database/client.ts';
+import { getDb } from '@/infra/database/TransactionContext.ts';
 import { eq, and, lt, gt } from 'drizzle-orm';
 
 export class DrizzleBookingRepository implements BookingRepository {
@@ -13,13 +14,13 @@ export class DrizzleBookingRepository implements BookingRepository {
       end: timeRange.end,
     };
 
-    await db.insert(schema.bookings)
+    await getDb(db).insert(schema.bookings)
       .values(dbBooking)
       .onConflictDoUpdate({ target: schema.bookings.id, set: dbBooking });
   }
 
   async findById(id: string): Promise<Booking | null> {
-    const result = await db.query.bookings.findFirst({
+    const result = await getDb(db).query.bookings.findFirst({
       where: eq(schema.bookings.id, id)
     });
     if (!result) return null;
@@ -28,7 +29,7 @@ export class DrizzleBookingRepository implements BookingRepository {
 
   async findOverlapping(params: { projectId: string; resourceId: string; timeRange: TimeRange }): Promise<Booking[]> {
     const { projectId, resourceId, timeRange } = params;
-    const results = await db.query.bookings.findMany({
+    const results = await getDb(db).query.bookings.findMany({
       where: and(
         eq(schema.bookings.projectId, projectId),
         eq(schema.bookings.resourceId, resourceId),
@@ -41,7 +42,7 @@ export class DrizzleBookingRepository implements BookingRepository {
   }
 
   async findByResourceId(resourceId: string, timeRange: TimeRange): Promise<Booking[]> {
-    const results = await db.query.bookings.findMany({
+    const results = await getDb(db).query.bookings.findMany({
       where: and(
         eq(schema.bookings.resourceId, resourceId),
         lt(schema.bookings.start, timeRange.end),
@@ -52,7 +53,7 @@ export class DrizzleBookingRepository implements BookingRepository {
   }
 
   async saveMany(bookings: Booking[]): Promise<void> {
-    await db.transaction(async (tx: any) => {
+    await getDb(db).transaction(async (tx: any) => {
       for (const booking of bookings) {
         const { timeRange, ...rest } = booking;
         const dbBooking = {

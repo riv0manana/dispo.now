@@ -26,6 +26,8 @@ import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.
 import { FakeUserRepository } from '@/core/tests/fakes/FakeUserRepository.ts'
 import { FakePasswordService } from '@/core/tests/fakes/FakePasswordService.ts'
 import { FakeTokenService } from '@/core/tests/fakes/FakeTokenService.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 // Infrastructure (Real)
 import { DrizzleProjectRepository } from '@/infra/repositories/DrizzleProjectRepository.ts';
@@ -34,6 +36,8 @@ import { DrizzleBookingRepository } from '@/infra/repositories/DrizzleBookingRep
 import { DrizzleUserRepository } from '@/infra/repositories/DrizzleUserRepository.ts';
 import { BcryptPasswordService } from '@/infra/services/BcryptPasswordService.ts';
 import { HonoJwtTokenService } from '@/infra/services/HonoJwtTokenService.ts';
+import { DrizzleTransactionManager } from '@/infra/services/DrizzleTransactionManager.ts';
+import { DrizzleLockService } from '@/infra/services/DrizzleLockService.ts';
 
 const container = createContainer()
 
@@ -48,6 +52,8 @@ if (isTest) {
   container.bind('UserRepository').toValue(new FakeUserRepository())
   container.bind('PasswordService').toValue(new FakePasswordService())
   container.bind('TokenService').toValue(new FakeTokenService())
+  container.bind('TransactionManager').toValue(new FakeTransactionManager())
+  container.bind('LockService').toValue(new FakeLockService())
 } else {
   container.bind('ProjectRepository').toValue(new DrizzleProjectRepository())
   container.bind('ResourceRepository').toValue(new DrizzleResourceRepository())
@@ -55,6 +61,8 @@ if (isTest) {
   container.bind('UserRepository').toValue(new DrizzleUserRepository())
   container.bind('PasswordService').toValue(new BcryptPasswordService())
   container.bind('TokenService').toValue(new HonoJwtTokenService())
+  container.bind('TransactionManager').toValue(new DrizzleTransactionManager())
+  container.bind('LockService').toValue(new DrizzleLockService())
 }
 
 // 2. Ports (Generators)
@@ -117,7 +125,9 @@ container.bind('GetResourcesUseCase').toClass(GetResourcesUseCase, [
 container.bind('CreateBookingUseCase').toClass(CreateBookingUseCase, [
   'BookingRepository',
   'ResourceRepository',
-  'IdGenerator'
+  'IdGenerator',
+  'TransactionManager',
+  'LockService'
 ])
 
 container.bind('CreateGroupBookingUseCase').toClass(CreateGroupBookingUseCase, [

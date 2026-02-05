@@ -2,11 +2,13 @@ import { assertEquals, assertRejects } from 'std/assert/mod.ts'
 import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 Deno.test('creates booking within capacity', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id1' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id1' }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'r', projectId: 'p', name: 'R', defaultCapacity: 1, metadata: {} })
 
@@ -25,7 +27,7 @@ Deno.test('creates booking within capacity', async () => {
 Deno.test('rejects capacity overflow', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'r', projectId: 'p', name: 'R', defaultCapacity: 1, metadata: {} })
 

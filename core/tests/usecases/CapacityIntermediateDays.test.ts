@@ -2,11 +2,13 @@ import { assertEquals, assertRejects } from 'std/assert/mod.ts'
 import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 Deno.test('SCENARIO: Multi-week booking blocks intermediate closed days', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
 
   // Resource: Open Mon-Fri (Closed Sat/Sun), Capacity 1
   await resourceRepo.save({ 

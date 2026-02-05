@@ -2,11 +2,13 @@ import { assertEquals, assertRejects } from 'std/assert/mod.ts'
 import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 Deno.test('Edge Case: Zero duration booking should fail', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 10, metadata: {} })
 
@@ -29,7 +31,7 @@ Deno.test('Edge Case: Zero duration booking should fail', async () => {
 Deno.test('Edge Case: Resource with 0 capacity should reject any booking', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
 
   // Resource has 0 capacity
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 0, metadata: {} })
@@ -52,7 +54,7 @@ Deno.test('Edge Case: Resource with 0 capacity should reject any booking', async
 Deno.test('Edge Case: Very high quantity booking', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 5, metadata: {} })
 
@@ -73,7 +75,7 @@ Deno.test('Edge Case: Very high quantity booking', async () => {
 Deno.test('Edge Case: Boundary overlap - End touches Start (Should succeed)', async () => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
 

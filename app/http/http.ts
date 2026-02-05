@@ -16,7 +16,23 @@ app.use('/*', cors())
 
 // Global Error Handler
 app.onError((err, c) => {
-  console.error(err)
+  const knownErrors = [
+    'CapacityExceeded',
+    'ResourceNotFound',
+    'BookingNotFound',
+    'ResourceDoesNotBelongToProject',
+    'BookingDoesNotBelongToProject',
+    'InvalidTimeRange',
+    'BookingAlreadyCancelled',
+    'DayNotAllowed',
+    'StartTimeOutsideConfig',
+    'EndTimeOutsideConfig',
+    'BookingSpansClosedHours'
+  ];
+
+  if (!knownErrors.includes(err.message)) {
+    console.error(err)
+  }
   
   if (err.message === 'CapacityExceeded') {
     return c.json({ error: 'CapacityExceeded' }, 409)

@@ -2,11 +2,13 @@ import { assertEquals, assertRejects } from 'std/assert/mod.ts'
 import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 Deno.test('CreateBookingUseCase - Booking Config Enforcement', async (t) => {
   const bookingRepo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id1' })
+  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id1' }, new FakeTransactionManager(), new FakeLockService())
 
   // Setup: Resource with specific business hours (Mon-Fri, 09:00-17:00)
   await resourceRepo.save({

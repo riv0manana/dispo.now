@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - name: Verify Code Formatting
+        run: deno fmt --check
+
+      - name: Lint Code
+        run: deno lint
+
+      - name: Run Core Unit Tests
+        # Runs domain logic, use cases, policies, and fakes verification
+        run: deno test --allow-env --allow-read core/tests
+
+      - name: Run E2E & Stress Tests
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgres://dummy:dummy@localhost:5432/dummy
+        run: deno test --no-check --allow-env --allow-read --allow-net app/tests

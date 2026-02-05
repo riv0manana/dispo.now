@@ -2,6 +2,8 @@ import { assertEquals, assertRejects } from 'std/assert/mod.ts'
 import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
+import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
+import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 import { Booking } from '@/core/domain/booking/Booking.schema.ts'
 
 // Helper to create a delay
@@ -25,7 +27,7 @@ class SlowFakeBookingRepository extends FakeBookingRepository {
 Deno.test('SCENARIO: Resource Isolation - Booking R1 does not block R2', async () => {
   const repo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() })
+  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() }, new FakeTransactionManager(), new FakeLockService())
 
   // Setup Resources
   await resourceRepo.save({ id: 'R1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
@@ -70,7 +72,7 @@ Deno.test('SCENARIO: Resource Isolation - Booking R1 does not block R2', async (
 Deno.test('SCENARIO: Mixed Capacities - R1(Cap=1) vs R2(Cap=5)', async () => {
   const repo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() })
+  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'R1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
   await resourceRepo.save({ id: 'R2', projectId: 'p1', name: 'R2', defaultCapacity: 5, metadata: {} })
@@ -125,7 +127,7 @@ Deno.test('SCENARIO: Mixed Capacities - R1(Cap=1) vs R2(Cap=5)', async () => {
 Deno.test('SCENARIO: Time Boundaries - Touching intervals are allowed', async () => {
   const repo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() })
+  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'R1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
   await uc.execute({
@@ -179,7 +181,7 @@ Deno.test('SCENARIO: Time Boundaries - Touching intervals are allowed', async ()
 Deno.test('SCENARIO: Recurring Bookings - 4 Weekly slots', async () => {
   const repo = new FakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() })
+  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'R1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
 
@@ -221,7 +223,7 @@ Deno.test('SCENARIO: Recurring Bookings - 4 Weekly slots', async () => {
 Deno.test('SCENARIO: Concurrency - Race Condition Check', async () => {
   const repo = new SlowFakeBookingRepository()
   const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() })
+  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() }, new FakeTransactionManager(), new FakeLockService())
 
   await resourceRepo.save({ id: 'R_RACE', projectId: 'p1', name: 'R_RACE', defaultCapacity: 1, metadata: {} })
 
@@ -242,10 +244,58 @@ Deno.test('SCENARIO: Concurrency - Race Condition Check', async () => {
   
   const successes = results.filter(r => r.status === 'fulfilled').length
   
+  // NOTE: We upgraded FakeTransactionManager to support REAL locking simulation.
+  // So now, even in Fakes, we expect the race condition to be PREVENTED.
   if (successes > 1) {
     console.warn('⚠️  Race condition detected: Multiple bookings created exceeding capacity.')
-    console.warn('    This is expected behavior for the Core without Transactional Repositories.')
   }
 
-  assertEquals(successes, 2, 'Without transactions, race condition should allow double booking')
+  // Expectation: 1 Success (Locked), 1 Failure (Blocked then CapacityExceeded)
+  // Why? 
+  // 1. T1 locks Resource.
+  // 2. T2 waits for Resource lock.
+  // 3. T1 books & commits (Release lock).
+  // 4. T2 acquires lock, reads bookings, sees T1's booking -> CapacityExceeded.
+  assertEquals(successes, 1, 'With locking (even in Fakes), race condition should be prevented')
+})
+
+Deno.test('SCENARIO: Stress Test - 2000 Concurrent Requests', async () => {
+  // This test proves that the Locking mechanism works under heavy load.
+  // We use the upgraded Fake implementation which now supports mutex locking.
+  
+  const repo = new SlowFakeBookingRepository()
+  const resourceRepo = new FakeResourceRepository()
+  const uc = new CreateBookingUseCase(repo, resourceRepo, { generate: () => crypto.randomUUID() }, new FakeTransactionManager(), new FakeLockService())
+
+  await resourceRepo.save({ id: 'R_STRESS', projectId: 'p1', name: 'R_STRESS', defaultCapacity: 1, metadata: {} })
+
+  const commonRequest = {
+    projectId: 'p1',
+    resourceId: 'R_STRESS',
+    start: new Date('2024-01-01T10:00:00Z'),
+    end: new Date('2024-01-01T11:00:00Z'),
+    quantity: 1,
+    capacity: 1, // Only 1 allowed
+    metadata: {}
+  }
+
+  // Create 2000 concurrent requests
+  const requests = Array.from({ length: 2000 }, () => uc.execute(commonRequest))
+  
+  const results = await Promise.allSettled(requests)
+  const successes = results.filter(r => r.status === 'fulfilled').length
+  const failures = results.filter(r => r.status === 'rejected').length
+
+  console.log(`Stress Test Results: ${successes} Successes, ${failures} Failures`)
+  
+  if (successes > 1) {
+    console.warn('⚠️  STRESS TEST FAILED: Overbooking Detected!')
+    console.warn(`    Capacity: 1. Bookings Created: ${successes}.`)
+  } else {
+    console.log('✅ STRESS TEST PASSED: Locking prevented overbooking.')
+  }
+
+  // We expect exactly 1 success and 1999 failures
+  assertEquals(successes, 1)
+  assertEquals(failures, 1999)
 })
