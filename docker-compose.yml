@@ -6,20 +6,20 @@ services:
     depends_on:
       - dispo-db
     environment:
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:Test!2026@dispo-db:5432/dispo-now}
-      - MCP_SERVER=${MCP_SERVER:-disabled}
+      - DATABASE_URL=${DATABASE_URL}
+      - MCP_SERVER=${MCP_SERVER:-enabled}
+      - JWT_SECRET=${JWT_SECRET}
+      - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
     restart: unless-stopped
     networks:
       - dokploy-network
 
   dispo-db:
     image: postgres:15-alpine
-    ports:
-      - 5432
     environment:
-      - POSTGRES_USER=${DB_USER:-postgres}
-      - POSTGRES_PASSWORD=${DB_PASSWORD:-Test!2026}
-      - POSTGRES_DB=${DB_NAME:-dispo-now}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped

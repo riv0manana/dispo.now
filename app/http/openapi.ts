@@ -50,9 +50,17 @@ export const openapiSpec = {
       LoginResponse: {
         type: 'object',
         properties: {
-          token: { type: 'string' }
+          token: { type: 'string' },
+          refreshToken: { type: 'string' }
         },
-        required: ['token']
+        required: ['token', 'refreshToken']
+      },
+      RefreshTokenRequest: {
+        type: 'object',
+        properties: {
+          refreshToken: { type: 'string' }
+        },
+        required: ['refreshToken']
       },
       Project: {
         type: 'object',
@@ -282,7 +290,7 @@ export const openapiSpec = {
     }
   },
   paths: {
-    '/resources/{id}/availability': {
+    '/api/resources/{id}/availability': {
       get: {
         summary: 'Get Availability Slots',
         security: [{ ApiKeyAuth: [] }],
@@ -300,7 +308,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/users': {
+    '/api/users': {
       post: {
         summary: 'Create Account',
         requestBody: {
@@ -316,7 +324,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/users/login': {
+    '/api/users/login': {
       post: {
         summary: 'Login',
         requestBody: {
@@ -332,7 +340,23 @@ export const openapiSpec = {
         }
       }
     },
-    '/projects': {
+    '/api/users/refresh': {
+      post: {
+        summary: 'Refresh Token',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/RefreshTokenRequest' } }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Token refreshed',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/LoginResponse' } } }
+          }
+        }
+      }
+    },
+    '/api/projects': {
       post: {
         summary: 'Create Project',
         security: [{ BearerAuth: [] }],
@@ -359,7 +383,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/projects/{id}': {
+    '/api/projects/{id}': {
       patch: {
         summary: 'Update Project',
         security: [{ BearerAuth: [] }],
@@ -392,7 +416,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/resources': {
+    '/api/resources': {
       post: {
         summary: 'Create Resource',
         security: [{ ApiKeyAuth: [] }],
@@ -409,7 +433,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/resources/{id}': {
+    '/api/resources/{id}': {
       patch: {
         summary: 'Update Resource',
         security: [{ ApiKeyAuth: [] }],
@@ -442,7 +466,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/bookings': {
+    '/api/bookings': {
       post: {
         summary: 'Create Booking',
         security: [{ ApiKeyAuth: [] }],
@@ -459,7 +483,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/bookings/group': {
+    '/api/bookings/group': {
       post: {
         summary: 'Create Group Booking',
         security: [{ ApiKeyAuth: [] }],
@@ -476,7 +500,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/bookings/recurring': {
+    '/api/bookings/recurring': {
       post: {
         summary: 'Create Recurring Booking',
         security: [{ ApiKeyAuth: [] }],

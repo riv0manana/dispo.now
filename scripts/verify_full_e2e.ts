@@ -24,29 +24,46 @@ async function main() {
     // 1. HAPPY PATH SETUP
     // ==========================================
     log('\n--- 1. SETUP ---')
-    
-    // Create Project A
-    const p1Res = await fetch(`${BASE_URL}/projects`, {
+
+    // Create user
+    const user = await await fetch(`${BASE_URL}/api/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Project A', metadata: {} })
+      body: JSON.stringify({ email: 'e2e_user@test.com', password: "test123@" })
+    })
+    const u1 = await (await assertStatus(user, 201, 'Created User')).json()
+
+     // Login user
+    const l1Res = await await fetch(`${BASE_URL}/api/users/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'e2e_user@test.com', password: "test123@" })
+    })
+    const l1 = await (await assertStatus(l1Res, 200, 'Created User')).json()
+    const bearer = l1.token
+    
+    // Create Project A
+    const p1Res = await fetch(`${BASE_URL}/api/projects`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${bearer}` },
+      body: JSON.stringify({ name: 'Project A', metadata: { website: "https://projecta.com", domain: "projecta.com" } })
     })
     const p1 = await (await assertStatus(p1Res, 201, 'Create Project A')).json()
     const KEY_A = p1.apiKey
     const ID_A = p1.id
 
     // Create Project B (Attacker)
-    const p2Res = await fetch(`${BASE_URL}/projects`, {
+    const p2Res = await fetch(`${BASE_URL}/api/projects`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Project B', metadata: {} })
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${bearer}` },
+      body: JSON.stringify({ name: 'Project B', metadata: { website: "https://projectb.com", domain: "projectb.com" } })
     })
     const p2 = await (await assertStatus(p2Res, 201, 'Create Project B')).json()
     const KEY_B = p2.apiKey
     const ID_B = p2.id
 
     // Create Resource A1 for Project A
-    const r1Res = await fetch(`${BASE_URL}/resources`, {
+    const r1Res = await fetch(`${BASE_URL}/api/resources`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -68,7 +85,7 @@ async function main() {
 
     // Missing Header
     await assertStatus(
-      await fetch(`${BASE_URL}/resources`, { 
+      await fetch(`${BASE_URL}/api/resources`, { 
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
         body: '{}' 
@@ -79,7 +96,7 @@ async function main() {
 
     // Invalid Header
     await assertStatus(
-      await fetch(`${BASE_URL}/resources`, { 
+      await fetch(`${BASE_URL}/api/resources`, { 
         method: 'POST', 
         headers: { 
           'Content-Type': 'application/json',
@@ -99,11 +116,12 @@ async function main() {
     // Project B trying to create resource for Project A
     // (Assuming body.projectId is A, but Key is B)
     await assertStatus(
-      await fetch(`${BASE_URL}/resources`, {
+      await fetch(`${BASE_URL}/api/resources`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-api-key': KEY_B 
+          'Authorization': `Bearer ${bearer}`,
+          'x-api-key': KEY_B
         },
         body: JSON.stringify({
           projectId: ID_A, // Mismatch
@@ -117,11 +135,12 @@ async function main() {
 
     // Project B trying to book Project A's resource
     await assertStatus(
-      await fetch(`${BASE_URL}/bookings`, {
+      await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'x-api-key': KEY_B 
+          'Authorization': `Bearer ${bearer}`,
+          'x-api-key': KEY_B
         },
         body: JSON.stringify({
           projectId: ID_B,
@@ -142,7 +161,7 @@ async function main() {
 
     // Logic Error: Start > End
     await assertStatus(
-      await fetch(`${BASE_URL}/bookings`, {
+      await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -161,7 +180,7 @@ async function main() {
 
     // Zero Quantity
     await assertStatus(
-      await fetch(`${BASE_URL}/bookings`, {
+      await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -184,7 +203,7 @@ async function main() {
     log('\n--- 5. CAPACITY & LIFECYCLE ---')
 
     // 5.1 Create Valid Booking 1
-    const b1Res = await fetch(`${BASE_URL}/bookings`, {
+    const b1Res = await fetch(`${BASE_URL}/api/bookings`, {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -202,7 +221,7 @@ async function main() {
 
     // 5.2 Attempt Overbooking (Conflict)
     await assertStatus(
-      await fetch(`${BASE_URL}/bookings`, {
+      await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -221,7 +240,7 @@ async function main() {
 
     // 5.3 Cancel Booking
     await assertStatus(
-      await fetch(`${BASE_URL}/bookings/${BOOK_ID}/cancel`, {
+      await fetch(`${BASE_URL}/api/bookings/${BOOK_ID}/cancel`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -235,7 +254,7 @@ async function main() {
     // 5.4 Cancel Again (Idempotency check / Error check)
     try {
         await assertStatus(
-        await fetch(`${BASE_URL}/bookings/${BOOK_ID}/cancel`, {
+        await fetch(`${BASE_URL}/api/bookings/${BOOK_ID}/cancel`, {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -251,7 +270,7 @@ async function main() {
 
     // 5.5 Create Booking 2 (Should succeed now that B1 is cancelled)
     await assertStatus(
-      await fetch(`${BASE_URL}/bookings`, {
+      await fetch(`${BASE_URL}/api/bookings`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

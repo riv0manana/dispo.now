@@ -8,6 +8,13 @@
       "when": 1770140036652,
       "tag": "0000_loose_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1770401957297,
+      "tag": "0001_spotty_randall",
+      "breakpoints": true
     }
   ]
 }

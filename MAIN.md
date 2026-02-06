@@ -117,27 +117,27 @@ Implemented via `hybridAuthMiddleware`.
 ### 6.2 Endpoints (REST)
 
 **Users**
-*   `POST /users` (Sign up)
-*   `POST /users/login` (Login)
+*   `POST /api/users` (Sign up)
+*   `POST /api/users/login` (Login)
 
 **Projects** (Bearer Auth)
-*   `POST /projects`
-*   `GET /projects`
-*   `PATCH /projects/:id`
-*   `DELETE /projects/:id`
+*   `POST /api/projects`
+*   `GET /api/projects`
+*   `PATCH /api/projects/:id`
+*   `DELETE /api/projects/:id`
 
 **Resources** (Hybrid/API Key)
-*   `POST /resources`
-*   `GET /resources` (List all for project)
-*   `PATCH /resources/:id`
-*   `DELETE /resources/:id`
-*   `GET /resources/:resourceId/bookings` (List bookings)
+*   `POST /api/resources`
+*   `GET /api/resources` (List all for project)
+*   `PATCH /api/resources/:id`
+*   `DELETE /api/resources/:id`
+*   `GET /api/resources/:resourceId/api/bookings` (List bookings)
 
 **Bookings** (Hybrid/API Key)
-*   `POST /bookings` (Create Single)
-*   `POST /bookings/group` (Create Atomic Group)
-*   `POST /bookings/recurring` (Create Atomic Recurring Series)
-*   `POST /bookings/:id/cancel` (Cancel)
+*   `POST /api/bookings` (Create Single)
+*   `POST /api/bookings/group` (Create Atomic Group)
+*   `POST /api/bookings/recurring` (Create Atomic Recurring Series)
+*   `POST /api/bookings/:id/cancel` (Cancel)
 
 ### 6.3 OpenAPI
 *   Routes defined using `@hono/zod-openapi`.

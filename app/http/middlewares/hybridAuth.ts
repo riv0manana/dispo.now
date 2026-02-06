@@ -1,11 +1,15 @@
 import { Context, Next } from 'hono'
-import { container } from '@/container/index.ts'
-import { VerifyApiKeyUseCase } from '@/core/application/usecases/VerifyApiKeyUseCase.ts'
-import { TokenService } from '@/core/application/ports/TokenService.ts'
-import { ProjectRepository } from '@/core/application/ports/ProjectRepository.ts'
+import { loadDeps } from "@/core/container/index.ts";
 
 export const hybridAuthMiddleware = async (c: Context, next: Next) => {
   let projectId: string | undefined = c.req.query('projectId')
+  const authHeader = c.req.header('Authorization');
+  const apiKey = c.req.header('x-api-key')
+  
+  if (apiKey && authHeader && authHeader.startsWith('Bearer ')){
+    return c.json({ error: 'Unauthorized: API Key and Bearer token are mutually exclusive' }, 403)
+  }
+
   
   if (!projectId) {
     const contentType = c.req.header('Content-Type')
@@ -22,13 +26,12 @@ export const hybridAuthMiddleware = async (c: Context, next: Next) => {
 
   // Case 1: Project ID is supplied -> Must use Bearer Auth
   if (projectId) {
-    const authHeader = c.req.header('Authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return c.json({ error: 'Unauthorized: Bearer token required when projectId is supplied' }, 401)
     }
 
     const token = authHeader.split(' ')[1]
-    const tokenService = container.get('TokenService') as TokenService
+    const tokenService = loadDeps('TokenService')
     let payload
     try {
       payload = await tokenService.verify(token)
@@ -36,7 +39,7 @@ export const hybridAuthMiddleware = async (c: Context, next: Next) => {
       return c.json({ error: 'Unauthorized: Invalid token' }, 401)
     }
 
-    const projectRepo = container.get('ProjectRepository') as ProjectRepository
+    const projectRepo = loadDeps('ProjectRepository')
     const project = await projectRepo.findById(projectId)
 
     if (!project) {
@@ -54,14 +57,13 @@ export const hybridAuthMiddleware = async (c: Context, next: Next) => {
   }
 
   // Case 2: No Project ID -> Must use API Key
-  const apiKey = c.req.header('x-api-key')
   
   if (!apiKey) {
     return c.json({ error: 'Unauthorized: Missing projectId or API Key' }, 401)
   }
 
   try {
-    const useCase = container.get('VerifyApiKeyUseCase') as VerifyApiKeyUseCase
+    const useCase = loadDeps('VerifyApiKeyUseCase')
     const resolvedProjectId = await useCase.execute(apiKey)
     
     c.set('projectId', resolvedProjectId)

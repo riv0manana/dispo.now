@@ -19,7 +19,7 @@ async function main() {
 
   console.log(`Seeding user: ${email}...`);
 
-  const createUserUseCase = container.get('CreateUserUseCase') as CreateUserUseCase;
+  const createUserUseCase = loadDeps('CreateUserUseCase');
 
   try {
     const result = await createUserUseCase.execute({ email, password });

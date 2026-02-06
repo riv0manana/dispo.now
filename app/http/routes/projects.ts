@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from 'npm:@hono/zod-openapi'
 import { z } from '@/app/zod.ts'
-import { container } from '@/container/index.ts'
+import { loadDeps } from '@/container/index.ts'
 import { CreateProjectUseCase } from '@/core/application/usecases/CreateProjectUseCase.ts'
 import { GetProjectsUseCase } from '@/core/application/usecases/GetProjectsUseCase.ts'
 import { UpdateProjectUseCase } from '@/core/application/usecases/UpdateProjectUseCase.ts'
@@ -67,7 +67,7 @@ projects.openapi(
     const user = c.get('user')
     if (!user) return c.json({ error: 'Unauthorized' }, 401)
     
-    const useCase = container.get('CreateProjectUseCase') as CreateProjectUseCase
+    const useCase = loadDeps('CreateProjectUseCase')
     
     const result = await useCase.execute({
       userId: user.userId,
@@ -106,7 +106,7 @@ projects.openapi(
     const user = c.get('user')
     if (!user) return c.json({ error: 'Unauthorized' }, 401)
     
-    const useCase = container.get('GetProjectsUseCase') as GetProjectsUseCase
+    const useCase = loadDeps('GetProjectsUseCase')
     const result = await useCase.execute(user.userId)
     return c.json(result, 200)
   }
@@ -150,7 +150,7 @@ projects.openapi(
     const projectId = c.req.param('id')
     const body = c.req.valid('json')
     
-    const useCase = container.get('UpdateProjectUseCase') as UpdateProjectUseCase
+    const useCase = loadDeps('UpdateProjectUseCase')
     
     await useCase.execute({
       projectId,
@@ -158,7 +158,7 @@ projects.openapi(
       data: body
     })
 
-    const getUseCase = container.get('GetProjectsUseCase') as GetProjectsUseCase
+    const getUseCase = loadDeps('GetProjectsUseCase')
     const projects = await getUseCase.execute(user.userId)
     const project = projects.find(p => p.id === projectId)
     
@@ -201,7 +201,7 @@ projects.openapi(
     
     const projectId = c.req.param('id')
     
-    const useCase = container.get('DeleteProjectUseCase') as DeleteProjectUseCase
+    const useCase = loadDeps('DeleteProjectUseCase')
     
     await useCase.execute({
       projectId,

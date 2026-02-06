@@ -36,4 +36,8 @@ export class FakeBookingRepository implements BookingRepository {
       await this.save(booking)
     }
   }
+
+  clear() {
+    this.items = []
+  }
 }

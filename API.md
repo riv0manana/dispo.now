@@ -13,7 +13,7 @@ The API supports two authentication methods depending on the endpoint:
 1.  **Bearer Authentication** (Dashboard / Management)
     *   Used for User and Project management.
     *   Header: `Authorization: Bearer <token>`
-    *   Obtain token via `/users/login`.
+    *   Obtain token via `/api/users/login`.
 
 2.  **API Key Authentication** (Runtime / Integration)
     *   Used for Resource and Booking operations.
@@ -27,7 +27,7 @@ The API supports two authentication methods depending on the endpoint:
 ### Create Account
 Register a new user account.
 
-*   **POST** `/users`
+*   **POST** `/api/users`
 *   **Auth**: Public
 
 **Request Body** (`CreateUserRequest`):
@@ -49,7 +49,7 @@ Register a new user account.
 ### Login
 Authenticate and receive a Bearer token.
 
-*   **POST** `/users/login`
+*   **POST** `/api/users/login`
 *   **Auth**: Public
 
 **Request Body** (`LoginRequest`):
@@ -74,7 +74,7 @@ Authenticate and receive a Bearer token.
 ### Create Project
 Initialize a new project tenant. Returns the API Key once.
 
-*   **POST** `/projects`
+*   **POST** `/api/projects`
 *   **Auth**: Bearer Token
 
 **Request Body** (`CreateProjectRequest`):
@@ -101,7 +101,7 @@ Initialize a new project tenant. Returns the API Key once.
 ### List Projects
 Get all projects for the authenticated user.
 
-*   **GET** `/projects`
+*   **GET** `/api/projects`
 *   **Auth**: Bearer Token
 
 **Response (200 OK)** (`Array<Project>`):
@@ -118,7 +118,7 @@ Get all projects for the authenticated user.
 ### Update Project
 Update project details.
 
-*   **PATCH** `/projects/{id}`
+*   **PATCH** `/api/projects/{id}`
 *   **Auth**: Bearer Token
 
 **Request Body** (`UpdateProjectRequest`):
@@ -141,7 +141,7 @@ Update project details.
 ### Delete Project
 Permanently remove a project.
 
-*   **DELETE** `/projects/{id}`
+*   **DELETE** `/api/projects/{id}`
 *   **Auth**: Bearer Token
 
 **Response (200 OK)**:
@@ -159,7 +159,7 @@ Permanently remove a project.
 ### Create Resource
 Define a bookable asset.
 
-*   **POST** `/resources`
+*   **POST** `/api/resources`
 *   **Auth**: API Key (`x-api-key`)
 
 **Request Body** (`CreateResourceRequest`):
@@ -196,7 +196,7 @@ Define a bookable asset.
 ### Update Resource
 Update resource configuration.
 
-*   **PATCH** `/resources/{id}`
+*   **PATCH** `/api/resources/{id}`
 *   **Auth**: API Key (`x-api-key`)
 
 **Request Body** (`UpdateResourceRequest`):
@@ -218,7 +218,7 @@ Update resource configuration.
 ### Delete Resource
 Permanently remove a resource.
 
-*   **DELETE** `/resources/{id}`
+*   **DELETE** `/api/resources/{id}`
 *   **Auth**: API Key (`x-api-key`)
 
 **Response (200 OK)**:
@@ -232,7 +232,7 @@ Permanently remove a resource.
 ### Get Availability
 Get available time slots for a resource.
 
-*   **GET** `/resources/{id}/availability`
+*   **GET** `/api/resources/{id}/availability`
 *   **Auth**: API Key (`x-api-key`)
 *   **Query Parameters**:
     *   `start` (required): ISO8601 Date
@@ -262,7 +262,7 @@ Get available time slots for a resource.
 ### Create Booking
 Reserve a resource.
 
-*   **POST** `/bookings`
+*   **POST** `/api/bookings`
 *   **Auth**: API Key (`x-api-key`)
 
 **Request Body** (`BookingCreateRequest`):
@@ -293,7 +293,7 @@ Reserve a resource.
 ### Create Group Booking
 Atomically create multiple bookings. If one fails, all fail.
 
-*   **POST** `/bookings/group`
+*   **POST** `/api/bookings/group`
 *   **Auth**: API Key (`x-api-key`)
 
 **Request Body** (`GroupBookingCreateRequest`):
@@ -328,7 +328,7 @@ Atomically create multiple bookings. If one fails, all fail.
 ### Create Recurring Booking
 Atomically create a series of bookings based on a recurrence rule. If any slot in the series fails, the entire series fails.
 
-*   **POST** `/bookings/recurring`
+*   **POST** `/api/bookings/recurring`
 *   **Auth**: API Key (`x-api-key`)
 
 **Request Body**:

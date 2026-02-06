@@ -24,4 +24,8 @@ export class FakeProjectRepository implements ProjectRepository {
   async delete(id: string) {
     this.items = this.items.filter(p => p.id !== id)
   }
+
+  clear() {
+    this.items = []
+  }
 }

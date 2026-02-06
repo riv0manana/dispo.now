@@ -3,17 +3,7 @@ import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
 import { Server } from 'npm:@modelcontextprotocol/sdk/server/index.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from 'npm:@modelcontextprotocol/sdk/types.js'
-import { container } from '@/container/index.ts'
-import { CreateProjectUseCase } from '@/core/application/usecases/CreateProjectUseCase.ts'
-import { GetProjectsUseCase } from '@/core/application/usecases/GetProjectsUseCase.ts'
-import { CreateResourceUseCase } from '@/core/application/usecases/CreateResourceUseCase.ts'
-import { GetResourcesUseCase } from '@/core/application/usecases/GetResourcesUseCase.ts'
-import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
-import { CancelBookingUseCase } from '@/core/application/usecases/CancelBookingUseCase.ts'
-import { GetAvailabilityUseCase } from '@/core/application/usecases/GetAvailabilityUseCase.ts'
-import { VerifyApiKeyUseCase } from '@/core/application/usecases/VerifyApiKeyUseCase.ts'
-import { LoginUserUseCase } from '@/core/application/usecases/LoginUserUseCase.ts'
-import { TokenService } from '@/core/application/ports/TokenService.ts'
+import { loadDeps } from '@/container/index.ts'
 
 // Session storage for transports
 class HonoSSETransport {
@@ -234,7 +224,7 @@ function setupToolHandlers(server: Server) {
         // Auth Helpers
         const verifyToken = async (token: string): Promise<string> => {
             if (!token) throw new Error('Missing Bearer token')
-            const tokenService = container.get('TokenService') as TokenService
+            const tokenService = loadDeps('TokenService')
             try {
                 const payload = await tokenService.verify(token)
                 return payload.userId as string
@@ -246,7 +236,7 @@ function setupToolHandlers(server: Server) {
         const getProjectId = async (args: any) => {
             // Case 1: API Key provided -> Resolve to Project ID
             if (args.apiKey) {
-                const verifyApiKey = container.get('VerifyApiKeyUseCase') as VerifyApiKeyUseCase
+                const verifyApiKey = loadDeps('VerifyApiKeyUseCase')
                 return await verifyApiKey.execute(args.apiKey)
             }
             
@@ -268,7 +258,7 @@ function setupToolHandlers(server: Server) {
 
             switch (name) {
                 case "login_user": {
-                    const useCase = container.get('LoginUserUseCase') as LoginUserUseCase
+                    const useCase = loadDeps('LoginUserUseCase')
                     result = await useCase.execute({
                         email: anyArgs.email,
                         password: anyArgs.password
@@ -277,7 +267,7 @@ function setupToolHandlers(server: Server) {
                 }
                 case "create_project": {
                     const userId = await verifyToken(anyArgs.token)
-                    const useCase = container.get('CreateProjectUseCase') as CreateProjectUseCase
+                    const useCase = loadDeps('CreateProjectUseCase')
                     const projectRes = await useCase.execute({
                         userId: userId,
                         name: anyArgs.name,
@@ -293,13 +283,13 @@ function setupToolHandlers(server: Server) {
                 }
                 case "list_projects": {
                     const userId = await verifyToken(anyArgs.token)
-                    const useCase = container.get('GetProjectsUseCase') as GetProjectsUseCase
+                    const useCase = loadDeps('GetProjectsUseCase')
                     result = await useCase.execute(userId)
                     break
                 }
                 case "create_resource": {
                     const projectId = await getProjectId(anyArgs)
-                    const useCase = container.get('CreateResourceUseCase') as CreateResourceUseCase
+                    const useCase = loadDeps('CreateResourceUseCase')
                     const resourceId = await useCase.execute({
                         projectId,
                         name: anyArgs.name,
@@ -319,7 +309,7 @@ function setupToolHandlers(server: Server) {
                 }
                 case "get_resources": {
                     const projectId = await getProjectId(anyArgs)
-                    const useCase = container.get('GetResourcesUseCase') as GetResourcesUseCase
+                    const useCase = loadDeps('GetResourcesUseCase')
                     const resources = await useCase.execute(projectId)
                     
                     result = resources.filter(r => {
@@ -332,7 +322,7 @@ function setupToolHandlers(server: Server) {
                 }
                 case "create_booking": {
                     const projectId = await getProjectId(anyArgs)
-                    const useCase = container.get('CreateBookingUseCase') as CreateBookingUseCase
+                    const useCase = loadDeps('CreateBookingUseCase')
                     const bookingId = await useCase.execute({
                         projectId,
                         resourceId: anyArgs.resourceId,
@@ -354,7 +344,7 @@ function setupToolHandlers(server: Server) {
                 }
                 case "check_availability": {
                     const projectId = await getProjectId(anyArgs)
-                    const useCase = container.get('GetAvailabilityUseCase') as GetAvailabilityUseCase
+                    const useCase = loadDeps('GetAvailabilityUseCase')
                     result = await useCase.execute({
                         projectId,
                         resourceId: anyArgs.resourceId,
@@ -366,7 +356,7 @@ function setupToolHandlers(server: Server) {
                 }
                 case "cancel_booking": {
                     const projectId = await getProjectId(anyArgs)
-                    const useCase = container.get('CancelBookingUseCase') as CancelBookingUseCase
+                    const useCase = loadDeps('CancelBookingUseCase')
                     await useCase.execute(anyArgs.bookingId, projectId)
                     result = { success: true }
                     break

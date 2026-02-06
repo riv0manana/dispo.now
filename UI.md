@@ -226,7 +226,7 @@ This is where onboarding becomes *effortless*.
 ### Left: Request Builder
 
 ```
-POST /bookings
+POST /api/bookings
 Headers:
 x-api-key: sk_live_...
 

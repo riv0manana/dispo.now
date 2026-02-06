@@ -10,7 +10,7 @@ export const apiKeyMiddleware = async (c: Context, next: Next) => {
   }
 
   try {
-    const useCase = container.get('VerifyApiKeyUseCase') as VerifyApiKeyUseCase
+    const useCase = loadDeps('VerifyApiKeyUseCase')
     const projectId = await useCase.execute(apiKey)
     
     // Attach projectId to context for downstream routes

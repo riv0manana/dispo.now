@@ -1,8 +1,6 @@
 import { OpenAPIHono, createRoute } from 'npm:@hono/zod-openapi';
 import { z } from '@/app/zod.ts';
-import { container } from '@/container/index.ts';
-import { CreateUserUseCase } from '@/core/application/usecases/CreateUserUseCase.ts';
-import { LoginUserUseCase } from '@/core/application/usecases/LoginUserUseCase.ts';
+import { loadDeps } from '@/container/index.ts';
 
 const users = new OpenAPIHono();
 
@@ -16,13 +14,23 @@ const LoginUserSchema = z.object({
   password: z.string()
 });
 
+const RefreshTokenSchema = z.object({
+  refreshToken: z.string()
+});
+
 const UserResponseSchema = z.object({
   id: z.string(),
   email: z.string().email()
 });
 
 const LoginResponseSchema = z.object({
-  token: z.string()
+  token: z.string(),
+  refreshToken: z.string()
+});
+
+const RefreshTokenResponseSchema = z.object({
+  token: z.string(),
+  refreshToken: z.string()
 });
 
 users.openapi(
@@ -47,7 +55,7 @@ users.openapi(
   }),
   async (c) => {
     const body = c.req.valid('json');
-    const uc = container.get('CreateUserUseCase') as CreateUserUseCase;
+    const uc = loadDeps('CreateUserUseCase');
     try {
       const result = await uc.execute(body);
       return c.json(result, 201);
@@ -80,12 +88,47 @@ users.openapi(
   }),
   async (c) => {
     const body = c.req.valid('json');
-    const uc = container.get('LoginUserUseCase') as LoginUserUseCase;
+    const uc = loadDeps('LoginUserUseCase');
     try {
       const result = await uc.execute(body);
       return c.json(result, 200);
     } catch (e: any) {
       if (e.message === 'InvalidCredentials') return c.json({ error: 'InvalidCredentials' }, 401);
+      throw e;
+    }
+  }
+);
+
+users.openapi(
+  createRoute({
+    method: 'post',
+    path: '/refresh',
+    summary: 'Refresh Access Token',
+    request: {
+      body: {
+        content: {
+          'application/json': { schema: RefreshTokenSchema }
+        }
+      }
+    },
+    responses: {
+      200: {
+        content: { 'application/json': { schema: RefreshTokenResponseSchema } },
+        description: 'Token refreshed'
+      },
+      401: { description: 'Invalid or expired refresh token' }
+    }
+  }),
+  async (c) => {
+    const { refreshToken } = c.req.valid('json');
+    const uc = loadDeps('RefreshAccessTokenUseCase');
+    try {
+      const result = await uc.execute(refreshToken);
+      return c.json(result, 200);
+    } catch (e: any) {
+      if (['InvalidRefreshToken', 'ExpiredRefreshToken', 'RevokedRefreshToken', 'UserNotFound'].includes(e.message)) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
       throw e;
     }
   }

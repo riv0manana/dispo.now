@@ -1,8 +1,8 @@
 {
   "tasks": {
-    "test": "deno test --allow-env --allow-read",
-    "test:e2e": "DATABASE_URL=postgres://user:pass@localhost:5432/db NODE_ENV=test deno test --no-check -A app/tests/",
-    "start": "deno run --allow-env --allow-read --allow-net --watch app/server.ts",
+    "test": "NODE_ENV=test JWT_SECRET=ci_test_secret DATABASE_URL=postgres://user:pass@localhost:5432/db deno test --allow-env --allow-read --no-check core/tests",
+    "test:e2e": "NODE_ENV=test DATABASE_URL=postgres://user:pass@localhost:5432/db JWT_SECRET=ci_test_secret deno test --no-check -A app/tests/",
+    "start": "NODE_ENV=development deno run --allow-env --allow-read --allow-net --watch app/server.ts --trace-leaks",
     "start:prod": "deno run --allow-env --allow-read --allow-net app/server.ts",
     "db:migrate": "deno run -A scripts/migrate.ts",
     "db:seed": "deno run -A scripts/seed_user.ts",

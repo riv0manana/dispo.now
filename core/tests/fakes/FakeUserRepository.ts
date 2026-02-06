@@ -16,4 +16,8 @@ export class FakeUserRepository implements UserRepository {
   async findByEmail(email: string) {
     return this.items.find(u => u.email === email) ?? null
   }
+
+  clear() {
+    this.items = []
+  }
 }

@@ -3,7 +3,7 @@ async function main() {
   const BASE_URL = 'http://localhost:8000'
 
   console.log('1. Creating Project...')
-  const projRes = await fetch(`${BASE_URL}/projects`, {
+  const projRes = await fetch(`${BASE_URL}/api/projects`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -20,7 +20,7 @@ async function main() {
   const PROJECT_ID = project.id
 
   console.log('\n2. Creating Resource...')
-  const resRes = await fetch(`${BASE_URL}/resources`, {
+  const resRes = await fetch(`${BASE_URL}/api/resources`, {
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ async function main() {
   const RESOURCE_ID = resource.id
 
   console.log('\n3. Creating Booking...')
-  const bookRes = await fetch(`${BASE_URL}/bookings`, {
+  const bookRes = await fetch(`${BASE_URL}/api/bookings`, {
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ async function main() {
   console.log('✅ Booking Created:', booking)
 
   console.log('\n4. Verifying Booking List...')
-  const listRes = await fetch(`${BASE_URL}/resources/${RESOURCE_ID}/bookings?start=2025-01-01T00:00:00Z&end=2025-01-02T00:00:00Z`, {
+  const listRes = await fetch(`${BASE_URL}/api/resources/${RESOURCE_ID}/api/bookings?start=2025-01-01T00:00:00Z&end=2025-01-02T00:00:00Z`, {
     headers: { 'x-api-key': API_KEY }
   })
   

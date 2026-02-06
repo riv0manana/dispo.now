@@ -138,12 +138,12 @@ export class DispoClient {
 
   // Auth (Management)
   async register(email: string, password: string) {
-    const res = await this.api.post('/users', { email, password });
+    const res = await this.api.post('/api/users', { email, password });
     return UserSchema.parse(res.data);
   }
 
   async login(email: string, password: string) {
-    const res = await this.api.post('/users/login', { email, password });
+    const res = await this.api.post('/api/users/login', { email, password });
     const data = z.object({ token: z.string() }).parse(res.data);
     // Update client state if needed, though typically server-side SDKs are stateless or configured at init
     if (!this.config.bearerToken) {
@@ -154,22 +154,22 @@ export class DispoClient {
 
   // Projects (Management - Requires Bearer)
   async createProject(name: string, metadata: Record<string, unknown> = {}) {
-    const res = await this.api.post('/projects', { name, metadata });
+    const res = await this.api.post('/api/projects', { name, metadata });
     return CreateProjectResponseSchema.parse(res.data);
   }
 
   async getProjects() {
-    const res = await this.api.get('/projects');
+    const res = await this.api.get('/api/projects');
     return z.array(ProjectSchema).parse(res.data);
   }
 
   async updateProject(id: string, data: { name?: string; metadata?: unknown }) {
-    const res = await this.api.patch(`/projects/${id}`, data);
+    const res = await this.api.patch(`/api/projects/${id}`, data);
     return ProjectSchema.parse(res.data);
   }
 
   async deleteProject(id: string) {
-    const res = await this.api.delete(`/projects/${id}`);
+    const res = await this.api.delete(`/api/projects/${id}`);
     return res.data;
   }
 
@@ -188,7 +188,7 @@ export class DispoClient {
       ...(options.projectId ? { projectId: options.projectId } : {})
     };
 
-    const res = await this.api.post('/resources', body, {
+    const res = await this.api.post('/api/resources', body, {
       headers: this.getAuthHeaders(options)
     });
     return ResourceSchema.parse(res.data);
@@ -200,7 +200,7 @@ export class DispoClient {
       params.projectId = options.projectId;
     }
 
-    const res = await this.api.get('/resources', {
+    const res = await this.api.get('/api/resources', {
       params,
       headers: this.getAuthHeaders(options)
     });
@@ -222,7 +222,7 @@ export class DispoClient {
       queryParams.projectId = options.projectId;
     }
 
-    const res = await this.api.patch(`/resources/${id}`, params, {
+    const res = await this.api.patch(`/api/resources/${id}`, params, {
       params: queryParams,
       headers: this.getAuthHeaders(options)
     });
@@ -235,7 +235,7 @@ export class DispoClient {
       queryParams.projectId = options.projectId;
     }
 
-    const res = await this.api.delete(`/resources/${id}`, {
+    const res = await this.api.delete(`/api/resources/${id}`, {
       params: queryParams,
       headers: this.getAuthHeaders(options)
     });
@@ -252,7 +252,7 @@ export class DispoClient {
       ...(options.projectId ? { projectId: options.projectId } : {})
     };
 
-    const res = await this.api.post('/bookings', body, {
+    const res = await this.api.post('/api/bookings', body, {
       headers: this.getAuthHeaders(options)
     });
     return CreateBookingResponseSchema.parse(res.data);
@@ -269,7 +269,7 @@ export class DispoClient {
       params.projectId = options.projectId;
     }
 
-    const res = await this.api.get(`/resources/${resourceId}/bookings`, {
+    const res = await this.api.get(`/api/resources/${resourceId}/api/bookings`, {
       params,
       headers: this.getAuthHeaders(options)
     });
@@ -288,7 +288,7 @@ export class DispoClient {
       params.projectId = options.projectId;
     }
 
-    const res = await this.api.get(`/resources/${resourceId}/availability`, {
+    const res = await this.api.get(`/api/resources/${resourceId}/availability`, {
       params,
       headers: this.getAuthHeaders(options)
     });
@@ -309,7 +309,7 @@ export class DispoClient {
     }, 
     options: RequestOptions = {}
   ) {
-    const res = await this.api.post('/bookings/group', data, {
+    const res = await this.api.post('/api/bookings/group', data, {
       headers: this.getAuthHeaders(options)
     });
     return z.array(z.string()).parse(res.data);
@@ -324,7 +324,7 @@ export class DispoClient {
       ...(options.projectId ? { projectId: options.projectId } : {})
     };
 
-    const res = await this.api.post('/bookings/recurring', body, {
+    const res = await this.api.post('/api/bookings/recurring', body, {
       headers: this.getAuthHeaders(options)
     });
     return z.array(z.string()).parse(res.data);
@@ -336,7 +336,7 @@ export class DispoClient {
       queryParams.projectId = options.projectId;
     }
 
-    const res = await this.api.post(`/bookings/${id}/cancel`, {}, {
+    const res = await this.api.post(`/api/bookings/${id}/cancel`, {}, {
       params: queryParams,
       headers: this.getAuthHeaders(options)
     });

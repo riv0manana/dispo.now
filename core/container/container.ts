@@ -1,4 +1,5 @@
 import { createContainer } from 'ioctopus'
+import { SYMBOLS, DI_TYPES } from './di.types.ts'
 
 // Use Cases
 import { CreateProjectUseCase } from '@/core/application/usecases/CreateProjectUseCase.ts'
@@ -18,12 +19,14 @@ import { CancelBookingUseCase } from '@/core/application/usecases/CancelBookingU
 import { GetAvailabilityUseCase } from '@/core/application/usecases/GetAvailabilityUseCase.ts'
 import { CreateUserUseCase } from '@/core/application/usecases/CreateUserUseCase.ts'
 import { LoginUserUseCase } from '@/core/application/usecases/LoginUserUseCase.ts'
+import { RefreshAccessTokenUseCase } from '@/core/application/usecases/RefreshAccessTokenUseCase.ts'
 
 // Infrastructure (Fakes for Testability/Core Focus)
 import { FakeProjectRepository } from '@/core/tests/fakes/FakeProjectRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeUserRepository } from '@/core/tests/fakes/FakeUserRepository.ts'
+import { FakeRefreshTokenRepository } from '@/core/tests/fakes/FakeRefreshTokenRepository.ts'
 import { FakePasswordService } from '@/core/tests/fakes/FakePasswordService.ts'
 import { FakeTokenService } from '@/core/tests/fakes/FakeTokenService.ts'
 import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
@@ -34,6 +37,7 @@ import { DrizzleProjectRepository } from '@/infra/repositories/DrizzleProjectRep
 import { DrizzleResourceRepository } from '@/infra/repositories/DrizzleResourceRepository.ts';
 import { DrizzleBookingRepository } from '@/infra/repositories/DrizzleBookingRepository.ts';
 import { DrizzleUserRepository } from '@/infra/repositories/DrizzleUserRepository.ts';
+import { DrizzleRefreshTokenRepository } from '@/infra/repositories/DrizzleRefreshTokenRepository.ts';
 import { BcryptPasswordService } from '@/infra/services/BcryptPasswordService.ts';
 import { HonoJwtTokenService } from '@/infra/services/HonoJwtTokenService.ts';
 import { DrizzleTransactionManager } from '@/infra/services/DrizzleTransactionManager.ts';
@@ -46,115 +50,129 @@ const isTest = env === 'test';
 
 // 1. Singletons (Repositories & Services)
 if (isTest) {
-  container.bind('ProjectRepository').toValue(new FakeProjectRepository())
-  container.bind('ResourceRepository').toValue(new FakeResourceRepository())
-  container.bind('BookingRepository').toValue(new FakeBookingRepository())
-  container.bind('UserRepository').toValue(new FakeUserRepository())
-  container.bind('PasswordService').toValue(new FakePasswordService())
-  container.bind('TokenService').toValue(new FakeTokenService())
-  container.bind('TransactionManager').toValue(new FakeTransactionManager())
-  container.bind('LockService').toValue(new FakeLockService())
+  container.bind(SYMBOLS.ProjectRepository).toValue(new FakeProjectRepository())
+  container.bind(SYMBOLS.ResourceRepository).toValue(new FakeResourceRepository())
+  container.bind(SYMBOLS.BookingRepository).toValue(new FakeBookingRepository())
+  container.bind(SYMBOLS.UserRepository).toValue(new FakeUserRepository())
+  container.bind(SYMBOLS.RefreshTokenRepository).toValue(new FakeRefreshTokenRepository())
+  container.bind(SYMBOLS.PasswordService).toValue(new FakePasswordService())
+  container.bind(SYMBOLS.TokenService).toValue(new FakeTokenService())
+  container.bind(SYMBOLS.TransactionManager).toValue(new FakeTransactionManager())
+  container.bind(SYMBOLS.LockService).toValue(new FakeLockService())
 } else {
-  container.bind('ProjectRepository').toValue(new DrizzleProjectRepository())
-  container.bind('ResourceRepository').toValue(new DrizzleResourceRepository())
-  container.bind('BookingRepository').toValue(new DrizzleBookingRepository())
-  container.bind('UserRepository').toValue(new DrizzleUserRepository())
-  container.bind('PasswordService').toValue(new BcryptPasswordService())
-  container.bind('TokenService').toValue(new HonoJwtTokenService())
-  container.bind('TransactionManager').toValue(new DrizzleTransactionManager())
-  container.bind('LockService').toValue(new DrizzleLockService())
+  container.bind(SYMBOLS.ProjectRepository).toValue(new DrizzleProjectRepository())
+  container.bind(SYMBOLS.ResourceRepository).toValue(new DrizzleResourceRepository())
+  container.bind(SYMBOLS.BookingRepository).toValue(new DrizzleBookingRepository())
+  container.bind(SYMBOLS.UserRepository).toValue(new DrizzleUserRepository())
+  container.bind(SYMBOLS.RefreshTokenRepository).toValue(new DrizzleRefreshTokenRepository())
+  container.bind(SYMBOLS.PasswordService).toValue(new BcryptPasswordService())
+  container.bind(SYMBOLS.TokenService).toValue(new HonoJwtTokenService())
+  container.bind(SYMBOLS.TransactionManager).toValue(new DrizzleTransactionManager())
+  container.bind(SYMBOLS.LockService).toValue(new DrizzleLockService())
 }
 
 // 2. Ports (Generators)
-container.bind('IdGenerator').toValue({ generate: () => crypto.randomUUID() })
-container.bind('ApiKeyGenerator').toValue({ generate: () => `sk_live_${crypto.randomUUID().replace(/-/g, '')}` })
+container.bind(SYMBOLS.IdGenerator).toValue({ generate: () => crypto.randomUUID() })
+container.bind(SYMBOLS.ApiKeyGenerator).toValue({ generate: () => `sk_live_${crypto.randomUUID().replace(/-/g, '')}` })
 
 // 3. Use Cases
-container.bind('CreateUserUseCase').toClass(CreateUserUseCase, [
-  'UserRepository',
-  'IdGenerator',
-  'PasswordService'
+container.bind(SYMBOLS.CreateUserUseCase).toClass(CreateUserUseCase, [
+  SYMBOLS.UserRepository,
+  SYMBOLS.IdGenerator,
+  SYMBOLS.PasswordService
 ])
 
-container.bind('LoginUserUseCase').toClass(LoginUserUseCase, [
-  'UserRepository',
-  'PasswordService',
-  'TokenService'
+container.bind(SYMBOLS.LoginUserUseCase).toClass(LoginUserUseCase, [
+  SYMBOLS.UserRepository,
+  SYMBOLS.PasswordService,
+  SYMBOLS.TokenService,
+  SYMBOLS.RefreshTokenRepository,
+  SYMBOLS.IdGenerator
 ])
 
-container.bind('CreateProjectUseCase').toClass(CreateProjectUseCase, [
-  'ProjectRepository',
-  'IdGenerator',
-  'ApiKeyGenerator'
+container.bind(SYMBOLS.RefreshAccessTokenUseCase).toClass(RefreshAccessTokenUseCase, [
+  SYMBOLS.TokenService,
+  SYMBOLS.RefreshTokenRepository,
+  SYMBOLS.UserRepository,
+  SYMBOLS.IdGenerator
 ])
 
-container.bind('UpdateProjectUseCase').toClass(UpdateProjectUseCase, [
-  'ProjectRepository'
+container.bind(SYMBOLS.CreateProjectUseCase).toClass(CreateProjectUseCase, [
+  SYMBOLS.ProjectRepository,
+  SYMBOLS.IdGenerator,
+  SYMBOLS.ApiKeyGenerator
 ])
 
-container.bind('DeleteProjectUseCase').toClass(DeleteProjectUseCase, [
-  'ProjectRepository'
+container.bind(SYMBOLS.UpdateProjectUseCase).toClass(UpdateProjectUseCase, [
+  SYMBOLS.ProjectRepository
 ])
 
-container.bind('VerifyApiKeyUseCase').toClass(VerifyApiKeyUseCase, [
-  'ProjectRepository'
+container.bind(SYMBOLS.DeleteProjectUseCase).toClass(DeleteProjectUseCase, [
+  SYMBOLS.ProjectRepository
 ])
 
-container.bind('GetProjectsUseCase').toClass(GetProjectsUseCase, [
-  'ProjectRepository'
+container.bind(SYMBOLS.VerifyApiKeyUseCase).toClass(VerifyApiKeyUseCase, [
+  SYMBOLS.ProjectRepository
 ])
 
-container.bind('CreateResourceUseCase').toClass(CreateResourceUseCase, [
-  'ResourceRepository',
-  'ProjectRepository',
-  'IdGenerator'
+container.bind(SYMBOLS.GetProjectsUseCase).toClass(GetProjectsUseCase, [
+  SYMBOLS.ProjectRepository
 ])
 
-container.bind('UpdateResourceUseCase').toClass(UpdateResourceUseCase, [
-  'ResourceRepository'
+container.bind(SYMBOLS.CreateResourceUseCase).toClass(CreateResourceUseCase, [
+  SYMBOLS.ResourceRepository,
+  SYMBOLS.ProjectRepository,
+  SYMBOLS.IdGenerator
 ])
 
-container.bind('DeleteResourceUseCase').toClass(DeleteResourceUseCase, [
-  'ResourceRepository'
+container.bind(SYMBOLS.UpdateResourceUseCase).toClass(UpdateResourceUseCase, [
+  SYMBOLS.ResourceRepository
 ])
 
-container.bind('GetResourcesUseCase').toClass(GetResourcesUseCase, [
-  'ResourceRepository'
+container.bind(SYMBOLS.DeleteResourceUseCase).toClass(DeleteResourceUseCase, [
+  SYMBOLS.ResourceRepository
 ])
 
-container.bind('CreateBookingUseCase').toClass(CreateBookingUseCase, [
-  'BookingRepository',
-  'ResourceRepository',
-  'IdGenerator',
-  'TransactionManager',
-  'LockService'
+container.bind(SYMBOLS.GetResourcesUseCase).toClass(GetResourcesUseCase, [
+  SYMBOLS.ResourceRepository
 ])
 
-container.bind('CreateGroupBookingUseCase').toClass(CreateGroupBookingUseCase, [
-  'BookingRepository',
-  'ResourceRepository',
-  'IdGenerator'
+container.bind(SYMBOLS.CreateBookingUseCase).toClass(CreateBookingUseCase, [
+  SYMBOLS.BookingRepository,
+  SYMBOLS.ResourceRepository,
+  SYMBOLS.IdGenerator,
+  SYMBOLS.TransactionManager,
+  SYMBOLS.LockService
 ])
 
-container.bind('CreateRecurringBookingUseCase').toClass(CreateRecurringBookingUseCase, [
-  'BookingRepository',
-  'ResourceRepository',
-  'IdGenerator'
+container.bind(SYMBOLS.CreateGroupBookingUseCase).toClass(CreateGroupBookingUseCase, [
+  SYMBOLS.BookingRepository,
+  SYMBOLS.ResourceRepository,
+  SYMBOLS.IdGenerator
 ])
 
-container.bind('GetBookingsUseCase').toClass(GetBookingsUseCase, [
-  'BookingRepository',
-  'ResourceRepository'
+container.bind(SYMBOLS.CreateRecurringBookingUseCase).toClass(CreateRecurringBookingUseCase, [
+  SYMBOLS.BookingRepository,
+  SYMBOLS.ResourceRepository,
+  SYMBOLS.IdGenerator
 ])
 
-container.bind('CancelBookingUseCase').toClass(CancelBookingUseCase, [
-  'BookingRepository'
+container.bind(SYMBOLS.GetBookingsUseCase).toClass(GetBookingsUseCase, [
+  SYMBOLS.BookingRepository,
+  SYMBOLS.ResourceRepository
 ])
 
-container.bind('GetAvailabilityUseCase').toClass(GetAvailabilityUseCase, [
-  'ResourceRepository',
-  'BookingRepository'
+container.bind(SYMBOLS.CancelBookingUseCase).toClass(CancelBookingUseCase, [
+  SYMBOLS.BookingRepository
 ])
 
+container.bind(SYMBOLS.GetAvailabilityUseCase).toClass(GetAvailabilityUseCase, [
+  SYMBOLS.ResourceRepository,
+  SYMBOLS.BookingRepository
+])
+
+export function loadDeps<K extends keyof typeof SYMBOLS & keyof DI_TYPES>(symbol: K): DI_TYPES[K] {
+  return container.get(SYMBOLS[symbol]);
+}
 
 export { container }
