@@ -1,11 +1,13 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { UpdateProjectUseCase } from '@/core/application/usecases/UpdateProjectUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeProjectRepository } from '@/core/tests/fakes/FakeProjectRepository.ts'
 import { ProjectSchema } from '@/core/domain/project/Project.schema.ts'
 
 Deno.test('UpdateProjectUseCase', async (t) => {
-  const repo = new FakeProjectRepository()
-  const useCase = new UpdateProjectUseCase(repo)
+  const repo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const useCase = loadDeps('UpdateProjectUseCase')
+  
+  repo.clear()
 
   const project = ProjectSchema.parse({
     id: 'p-1',

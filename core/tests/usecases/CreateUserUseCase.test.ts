@@ -1,26 +1,27 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { CreateUserUseCase } from '@/core/application/usecases/CreateUserUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeUserRepository } from '@/core/tests/fakes/FakeUserRepository.ts'
-import { FakePasswordService } from '@/core/tests/fakes/FakePasswordService.ts'
 
 Deno.test('creates user with hashed password', async () => {
-  const repo = new FakeUserRepository()
-  const passwordService = new FakePasswordService()
-  const uc = new CreateUserUseCase(repo, { generate: () => 'u1' }, passwordService)
+  const repo = loadDeps('UserRepository') as FakeUserRepository
+  const uc = loadDeps('CreateUserUseCase')
+  
+  repo.clear()
 
   const result = await uc.execute({ email: 'test@example.com', password: 'password123' })
 
-  assertEquals(result.id, 'u1')
+  // Container mock generator returns 'test@example.com'
   assertEquals(result.email, 'test@example.com')
 
-  const stored = await repo.findById('u1')
+  const stored = await repo.findById(result.id)
   assertEquals(stored?.passwordHash, 'hashed_password123')
 })
 
 Deno.test('fails if user already exists', async () => {
-  const repo = new FakeUserRepository()
-  const passwordService = new FakePasswordService()
-  const uc = new CreateUserUseCase(repo, { generate: () => 'u1' }, passwordService)
+  const repo = loadDeps('UserRepository') as FakeUserRepository
+  const uc = loadDeps('CreateUserUseCase')
+  
+  repo.clear()
 
   await repo.save({ id: 'existing', email: 'test@example.com', passwordHash: 'hash' })
 

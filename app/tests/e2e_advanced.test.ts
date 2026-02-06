@@ -11,14 +11,14 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
   // 1. Setup
   await t.step('Setup', async () => {
     // Signup
-    await app.request('/users', {
+    await app.request('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password: 'password123' })
     })
 
     // Login
-    const loginRes = await app.request('/users/login', {
+    const loginRes = await app.request('/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password: 'password123' })
@@ -26,7 +26,7 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
     token = (await loginRes.json()).token
 
     // Create Project
-    const projRes = await app.request('/projects', {
+    const projRes = await app.request('/api/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name: 'Advanced Project', metadata: {} })
@@ -36,7 +36,7 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
     projectId = projBody.id
 
     // Create Resource
-    const resRes = await app.request('/resources', {
+    const resRes = await app.request('/api/resources', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
       body: JSON.stringify({
@@ -50,7 +50,7 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
 
   // 2. Recurring Booking
   await t.step('Recurring Booking', async () => {
-    const res = await app.request('/bookings/recurring', {
+    const res = await app.request('/api/bookings/recurring', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
       body: JSON.stringify({
@@ -73,7 +73,7 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
 
   // 3. Group Booking
   await t.step('Group Booking', async () => {
-    const res = await app.request('/bookings/group', {
+    const res = await app.request('/api/bookings/group', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
       body: JSON.stringify({
@@ -103,7 +103,7 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
   // 4. Fetch/Search Capabilities
   await t.step('Fetch & Search', async () => {
     // List Projects (Owner)
-    const projListRes = await app.request('/projects', {
+    const projListRes = await app.request('/api/projects', {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` }
     })
@@ -117,7 +117,7 @@ Deno.test('E2E: Advanced Scenarios (Recurring, Group, Search)', async (t) => {
     assertExists(projects.find((p: any) => p.id === projectId))
 
     // List Resources (Project context - via API Key)
-    const resListRes = await app.request('/resources', {
+    const resListRes = await app.request('/api/resources', {
       method: 'GET',
       headers: { 'x-api-key': apiKey }
     })

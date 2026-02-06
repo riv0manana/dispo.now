@@ -1,10 +1,12 @@
 import { assertEquals } from 'std/assert/mod.ts'
-import { GetResourcesUseCase } from '@/core/application/usecases/GetResourcesUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 
 Deno.test('lists resources by project', async () => {
-  const repo = new FakeResourceRepository()
-  const uc = new GetResourcesUseCase(repo)
+  const repo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetResourcesUseCase')
+  
+  repo.clear()
 
   await repo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
   await repo.save({ id: 'r2', projectId: 'p1', name: 'R2', defaultCapacity: 1, metadata: {} })

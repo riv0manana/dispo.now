@@ -1,11 +1,13 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { DeleteResourceUseCase } from '@/core/application/usecases/DeleteResourceUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 import { ResourceSchema } from '@/core/domain/resource/Resource.schema.ts'
 
 Deno.test('DeleteResourceUseCase', async (t) => {
-  const repo = new FakeResourceRepository()
-  const useCase = new DeleteResourceUseCase(repo)
+  const repo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const useCase = loadDeps('DeleteResourceUseCase')
+  
+  repo.clear()
 
   const resource = ResourceSchema.parse({
     id: 'r-1',

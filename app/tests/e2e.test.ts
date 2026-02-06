@@ -9,7 +9,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
   
   // 1. User Signup
   await t.step('Signup', async () => {
-    const res = await app.request('/users', {
+    const res = await app.request('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -24,7 +24,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 2. User Login
   await t.step('Login', async () => {
-    const res = await app.request('/users/login', {
+    const res = await app.request('/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -40,7 +40,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 3. Create Project (Protected by Bearer Token)
   await t.step('Create Project', async () => {
-    const res = await app.request('/projects', {
+    const res = await app.request('/api/projects', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 4. Create Resource (Protected by API Key)
   await t.step('Create Resource', async () => {
-    const res = await app.request('/resources', {
+    const res = await app.request('/api/resources', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 5. Create Booking (Protected by API Key)
   await t.step('Create Booking', async () => {
-    const res = await app.request('/bookings', {
+    const res = await app.request('/api/bookings', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 6. Edge Case: Create Booking with Capacity Overflow
   await t.step('Booking Overflow', async () => {
-    const res = await app.request('/bookings', {
+    const res = await app.request('/api/bookings', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 7. Edge Case: Unauthorized Project Access (No Token)
   await t.step('Unauthorized Project Access', async () => {
-    const res = await app.request('/projects', {
+    const res = await app.request('/api/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: 'Hacker Project' })
@@ -133,7 +133,7 @@ Deno.test('E2E: Full User Journey', async (t) => {
 
   // 8. Edge Case: Invalid API Key
   await t.step('Invalid API Key', async () => {
-    const res = await app.request('/resources', {
+    const res = await app.request('/api/resources', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',

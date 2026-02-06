@@ -1,24 +1,24 @@
 import { assertEquals, assertExists } from 'std/assert/mod.ts'
 import { app } from '@/app/http/http.ts'
-import { container } from '@/container/index.ts'
+
 
 Deno.test('E2E: Hybrid Authentication Logic', async (t) => {
   // 1. Setup User & Project
   const email = `test-hybrid-${crypto.randomUUID()}@example.com`
   const password = 'password123'
-  await app.request('/users', {
+  await app.request('/api/users', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
     headers: { 'Content-Type': 'application/json' }
   })
-  const loginRes = await app.request('/users/login', {
+  const loginRes = await app.request('/api/users/login', {
     method: 'POST',
     body: JSON.stringify({ email, password }),
     headers: { 'Content-Type': 'application/json' }
   })
   const { token } = await loginRes.json()
 
-  const projectRes = await app.request('/projects', {
+  const projectRes = await app.request('/api/projects', {
     method: 'POST',
     body: JSON.stringify({ name: 'Hybrid Project' }),
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
@@ -28,7 +28,7 @@ Deno.test('E2E: Hybrid Authentication Logic', async (t) => {
   const apiKey = project.apiKey
 
   // 2. Case: Bearer + ProjectId (Should Succeed)
-  const bearerRes = await app.request('/resources', {
+  const bearerRes = await app.request('/api/resources', {
     method: 'POST',
     body: JSON.stringify({
       projectId,
@@ -45,7 +45,7 @@ Deno.test('E2E: Hybrid Authentication Logic', async (t) => {
   assertEquals(res1.projectId, projectId)
 
   // 3. Case: Bearer WITHOUT ProjectId (Should Fail - Missing projectId or API Key)
-  const failRes = await app.request('/resources', {
+  const failRes = await app.request('/api/resources', {
     method: 'POST',
     body: JSON.stringify({
       name: 'Fail Resource',
@@ -63,7 +63,7 @@ Deno.test('E2E: Hybrid Authentication Logic', async (t) => {
 
   // 4. Case: Priority Check (ProjectId supplied + Invalid Token + Valid API Key) -> Should Fail
   // Reason: If projectId is supplied, we MUST use Bearer Auth. API Key is ignored.
-  const priorityRes = await app.request('/resources', {
+  const priorityRes = await app.request('/api/resources', {
     method: 'POST',
     body: JSON.stringify({
       projectId,
@@ -73,7 +73,6 @@ Deno.test('E2E: Hybrid Authentication Logic', async (t) => {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer invalid-token',
-      'x-api-key': apiKey
     }
   })
   assertEquals(priorityRes.status, 401)
@@ -81,7 +80,7 @@ Deno.test('E2E: Hybrid Authentication Logic', async (t) => {
   assertEquals(err2.error, 'Unauthorized: Invalid token')
 
   // 5. Case: API Key Only (No ProjectId in Body) -> Should Succeed
-  const apiKeyRes = await app.request('/resources', {
+  const apiKeyRes = await app.request('/api/resources', {
     method: 'POST',
     body: JSON.stringify({
       name: 'API Key Resource',

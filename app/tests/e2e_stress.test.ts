@@ -9,7 +9,7 @@ Deno.test('E2E Stress Test: Concurrent Bookings via HTTP', async (t) => {
   // 1. Setup: Signup & Login
   await t.step('Setup', async () => {
     // Signup
-    await app.request('/users', {
+    await app.request('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -19,7 +19,7 @@ Deno.test('E2E Stress Test: Concurrent Bookings via HTTP', async (t) => {
     })
 
     // Login
-    const res = await app.request('/users/login', {
+    const res = await app.request('/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -34,7 +34,7 @@ Deno.test('E2E Stress Test: Concurrent Bookings via HTTP', async (t) => {
   // 2. Create Project & Resource
   await t.step('Create Resource (Capacity 1)', async () => {
     // Project
-    const resProj = await app.request('/projects', {
+    const resProj = await app.request('/api/projects', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ Deno.test('E2E Stress Test: Concurrent Bookings via HTTP', async (t) => {
     projectId = projBody.id
 
     // Resource
-    const resRes = await app.request('/resources', {
+    const resRes = await app.request('/api/resources', {
       method: 'POST',
       headers: { 
         'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ Deno.test('E2E Stress Test: Concurrent Bookings via HTTP', async (t) => {
     }
 
     const requestPromises = Array.from({ length: CONCURRENT_REQUESTS }, () => 
-      app.request('/bookings', {
+      app.request('/api/bookings', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
