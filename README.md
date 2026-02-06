@@ -4,12 +4,13 @@
 ![License](https://img.shields.io/badge/license-AGPL--v3-blue.svg)
 ![Status](https://img.shields.io/badge/status-beta-orange.svg)
 ![Stack](https://img.shields.io/badge/stack-Deno_Hono_Postgres-green.svg)
+![AI Ready](https://img.shields.io/badge/AI-Native_MCP-purple.svg)
 
 **The Postgres of Booking Engines.**
 
 `dispo.now` is a self-hosted, high-performance booking infrastructure. It is not a SaaS API. It is a Docker container that you run in your own cloud.
 
-Whether you are building a healthcare platform, a car rental service, or a webinar system, `dispo.now` provides the **ACID guarantees** for time allocation that your database lacks.
+Whether you are building a healthcare platform, a car rental service, or an **AI Agent**, `dispo.now` provides the **ACID guarantees** for time allocation that your database lacks.
 
 ---
 
@@ -35,6 +36,12 @@ SaaS APIs charge per request. If your app succeeds, your bill explodes.
 Building booking logic is easy. Building *concurrency-safe* booking logic is hard.
 *   **dispo.now** isn't just a calendar; it's an **ACID transaction engine for time**.
 *   We use strict Postgres transactions to guarantee that multi-resource bookings (e.g., Doctor + Room) either fully succeed or fully fail.
+
+### 4. AI Native (MCP)
+The future is agentic. `dispo.now` implements the **Model Context Protocol (MCP)** out of the box.
+*   Connect Claude, Cursor, or custom Agents directly to your booking engine.
+*   Agents can "discover" resources and make bookings without hallucinations.
+*   Zero-config integration: Just set `MCP_SERVER="enabled"`.
 
 ### Comparison
 

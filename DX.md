@@ -197,6 +197,27 @@ sequenceDiagram
 
 *Benefit*: Data is completely isolated. Salon A cannot see Salon B's bookings.
 
+### Scenario E: AI Agent Integration (MCP)
+**Use Case**: You want your AI Assistant (e.g., a Slack Bot or a Voice Agent) to schedule meetings autonomously.
+*   **Pattern**: Model Context Protocol (MCP).
+
+**Setup**:
+1.  Enable MCP in your Docker container:
+    ```yaml
+    environment:
+      - MCP_SERVER="enabled"
+    ```
+2.  Connect your Agent (e.g., Claude Desktop or Custom LLM) to the SSE endpoint:
+    *   URL: `http://localhost:8000/mcp/sse`
+
+**Workflow**:
+1.  **Discovery**: The Agent calls `list_tools` and sees `list_resources`, `create_booking`, etc.
+2.  **Reasoning**: User says "Book a room for 5 people". Agent calls `list_resources({ capacity: { gte: 5 } })`.
+3.  **Action**: Agent finds "Conference Room B" and calls `create_booking`.
+4.  **Result**: dispo.now returns the booking confirmation.
+
+*Benefit*: No custom function calling logic required. The schema is auto-exposed via MCP.
+
 ---
 
 ## 5. BEST PRACTICES

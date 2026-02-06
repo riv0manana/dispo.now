@@ -157,6 +157,9 @@ dispo.now/
 │  │  ├─ types.ts
 │  │  ├─ zod.ts                       # zod config
 │  │
+│  ├─ mcp/                            # MODEL CONTEXT PROTOCOL
+│  │  ├─ server.ts                    # MCP server implementation
+│  │
 │  ├─ tests/                          # E2E TESTS
 │  │  ├─ e2e.test.ts
 │  │  ├─ e2e_features.test.ts

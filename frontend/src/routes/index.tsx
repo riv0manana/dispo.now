@@ -7,6 +7,7 @@ import { ComparisonSection } from "../components/ComparisonSection";
 import { ResourceIllustration, CapacityIllustration, DeveloperIllustration } from "../components/Illustrations";
 import CompanySection from "../components/CompanySection";
 import HeroSection from "../components/HeroSection";
+import { McpSection } from "../components/McpSection";
 
 export function LandingRoute() {
   return (
@@ -36,6 +37,9 @@ export function LandingRoute() {
       <main>
         {/* HERO SECTION */}
         <HeroSection />
+
+        {/* USE CASES TABS SECTION */}
+        <UseCasesSection />
 
         {/* USE CASES SECTION (Framer Illustrations) */}
         <div className="border-t border-white/5 bg-[#111]">
@@ -99,8 +103,10 @@ export function LandingRoute() {
           </div>
         </div>
 
-        {/* USE CASES TABS SECTION */}
-        <UseCasesSection />
+        {/* MCP SECTION */}
+        <McpSection />
+
+        
 
         {/* COMPARISON SECTION */}
         <ComparisonSection />

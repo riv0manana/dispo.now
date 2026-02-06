@@ -6,6 +6,7 @@ import { projects } from './routes/projects.ts'
 import { resources } from './routes/resources.ts'
 import { bookings } from './routes/bookings.ts'
 import { users } from './routes/users.ts'
+import { mcpApp } from '../mcp/server.ts'
 import { openapiSpec } from './openapi.ts'
 import { HonoEnv } from './types.ts'
 
@@ -75,6 +76,12 @@ app.route('/users', users)
 app.route('/projects', projects)
 app.route('/resources', resources)
 app.route('/bookings', bookings)
+
+// MCP Server (Only enabled if MCP_SERVER is present)
+const mcp_state = Deno.env.get('MCP_SERVER') || 'disabled'
+if (mcp_state === 'enabled') {
+  app.route('/mcp', mcpApp)
+}
 
 app.get('/doc', (c) => c.json(openapiSpec))
 
