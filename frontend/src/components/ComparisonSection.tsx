@@ -1,58 +1,61 @@
 import { Check, X, Server, Database, ShieldCheck, DollarSign, Cloud, Lock } from "lucide-react";
 import { motion } from "framer-motion";
-
-const comparisons = [
-  {
-    title: "Data Sovereignty",
-    icon: Database,
-    saas: {
-      title: "SaaS APIs (Timekit, Hapio)",
-      desc: "Your customer data lives in their cloud.",
-      status: "risk",
-      points: ["GDPR/HIPAA headaches", "Data leaks possible", "Vendor lock-in"]
-    },
-    dispo: {
-      title: "dispo.now",
-      desc: "Runs in your VPC. You own everything.",
-      status: "success",
-      points: ["100% Data Ownership", "Zero 3rd party leaks", "Audit logging"]
-    }
-  },
-  {
-    title: "Cost & Scale",
-    icon: DollarSign,
-    saas: {
-      title: "SaaS APIs",
-      desc: "Pay per request. Success = Penalty.",
-      status: "risk",
-      points: ["Expensive at scale", "Usage limits", "Unpredictable bills"]
-    },
-    dispo: {
-      title: "dispo.now",
-      desc: "Free & Open Source (AGPLv3).",
-      status: "success",
-      points: ["Unlimited Bookings", "Flat infrastructure cost", "No 'Success Tax'"]
-    }
-  },
-  {
-    title: "Correctness",
-    icon: Lock,
-    saas: {
-      title: "Building In-House",
-      desc: "Race conditions are inevitable.",
-      status: "risk",
-      points: ["Double bookings", "Corrupted state", "Maintenance nightmare"]
-    },
-    dispo: {
-      title: "dispo.now",
-      desc: "ACID Transaction Engine.",
-      status: "success",
-      points: ["Postgres Strictness", "Atomic Group Bookings", "Impossible to overbook"]
-    }
-  }
-];
+import { useTranslation } from "react-i18next";
 
 export function ComparisonSection() {
+  const { t } = useTranslation();
+
+  const comparisons = [
+    {
+      title: t('comparison.items.sovereignty.title'),
+      icon: Database,
+      saas: {
+        title: t('comparison.items.sovereignty.saas.title'),
+        desc: t('comparison.items.sovereignty.saas.desc'),
+        status: "risk",
+        points: t('comparison.items.sovereignty.saas.points', { returnObjects: true }) as string[]
+      },
+      dispo: {
+        title: "dispo.now",
+        desc: t('comparison.items.sovereignty.dispo.desc'),
+        status: "success",
+        points: t('comparison.items.sovereignty.dispo.points', { returnObjects: true }) as string[]
+      }
+    },
+    {
+      title: t('comparison.items.cost.title'),
+      icon: DollarSign,
+      saas: {
+        title: t('comparison.items.cost.saas.title'),
+        desc: t('comparison.items.cost.saas.desc'),
+        status: "risk",
+        points: t('comparison.items.cost.saas.points', { returnObjects: true }) as string[]
+      },
+      dispo: {
+        title: "dispo.now",
+        desc: t('comparison.items.cost.dispo.desc'),
+        status: "success",
+        points: t('comparison.items.cost.dispo.points', { returnObjects: true }) as string[]
+      }
+    },
+    {
+      title: t('comparison.items.correctness.title'),
+      icon: Lock,
+      saas: {
+        title: t('comparison.items.correctness.saas.title'),
+        desc: t('comparison.items.correctness.saas.desc'),
+        status: "risk",
+        points: t('comparison.items.correctness.saas.points', { returnObjects: true }) as string[]
+      },
+      dispo: {
+        title: "dispo.now",
+        desc: t('comparison.items.correctness.dispo.desc'),
+        status: "success",
+        points: t('comparison.items.correctness.dispo.points', { returnObjects: true }) as string[]
+      }
+    }
+  ];
+
   return (
     <section className="py-24 border-t border-white/5 bg-[#0F0F0F] relative overflow-hidden">
       {/* Background decoration */}
@@ -67,7 +70,7 @@ export function ComparisonSection() {
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-emerald-400 text-xs font-mono mb-4"
           >
             <Server size={12} />
-            <span>INFRASTRUCTURE VS SAAS</span>
+            <span>{t('comparison.badge')}</span>
           </motion.div>
           
           <motion.h2 
@@ -77,7 +80,7 @@ export function ComparisonSection() {
             transition={{ delay: 0.1 }}
             className="text-3xl md:text-4xl font-bold mb-6 text-white"
           >
-            Stop paying the "SaaS Tax".
+            {t('comparison.title')}
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 10 }}
@@ -86,8 +89,7 @@ export function ComparisonSection() {
             transition={{ delay: 0.2 }}
             className="text-zinc-400 max-w-2xl mx-auto text-lg"
           >
-            Why rent an API when you can own the infrastructure?
-            dispo.now gives you the control of building in-house with the speed of a managed service.
+            {t('comparison.description')}
           </motion.p>
         </div>
 
@@ -115,7 +117,7 @@ export function ComparisonSection() {
                         {/* SaaS Side (The Problem) */}
                         <div className="p-6 bg-red-500/5 border-b border-white/5">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-red-400 uppercase tracking-wider">The Problem</span>
+                                <span className="text-xs font-bold text-red-400 uppercase tracking-wider">{t('comparison.problem')}</span>
                                 <Cloud size={14} className="text-red-400/50" />
                             </div>
                             <h4 className="font-semibold text-zinc-300 mb-1">{item.saas.title}</h4>
@@ -135,7 +137,7 @@ export function ComparisonSection() {
                             <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-emerald-500/20 to-transparent" />
                             
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">The Solution</span>
+                                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">{t('comparison.solution')}</span>
                                 <ShieldCheck size={14} className="text-emerald-400/50" />
                             </div>
                             <h4 className="font-semibold text-white mb-1">{item.dispo.title}</h4>
@@ -160,7 +162,7 @@ export function ComparisonSection() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
-                <span>Ready to deploy via Docker</span>
+                <span>{t('comparison.ready')}</span>
              </div>
         </div>
       </div>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dispo-now.riv0manana.dev/sitemap.xml

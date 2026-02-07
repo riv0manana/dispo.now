@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Bot, Terminal, CheckCircle2, Cpu } from "lucide-react";
+import { useTranslation, Trans } from "react-i18next";
 
 const ChatMessage = ({ role, text, delay }: { role: 'user' | 'ai' | 'system', text: string, delay: number }) => {
   return (
@@ -26,6 +27,8 @@ const ChatMessage = ({ role, text, delay }: { role: 'user' | 'ai' | 'system', te
 };
 
 export const McpSection = () => {
+  const { t } = useTranslation();
+
   return (
     <section className="py-24 bg-[#0F0F0F] border-t border-white/5 overflow-hidden relative">
        {/* Background Elements */}
@@ -44,21 +47,17 @@ export const McpSection = () => {
             >
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-medium mb-6">
                 <Cpu size={12} />
-                <span>AI Native Protocol</span>
+                <span>{t('mcp.badge')}</span>
               </div>
               <h2 className="text-4xl font-bold mb-6 text-white tracking-tight">
-                Ready for the <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-400">Agentic Future</span>
+                {t('mcp.title.part1')} <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-400">{t('mcp.title.part2')}</span>
               </h2>
               <p className="text-zinc-400 text-lg leading-relaxed mb-8">
-                dispo.now isn't just an API for humans. We implement the <strong>Model Context Protocol (MCP)</strong>, allowing AI agents (like Claude, Cursor, or custom LLMs) to discover resources and make bookings autonomously.
+                <Trans i18nKey="mcp.description" components={{ 1: <strong /> }} />
               </p>
               
               <ul className="space-y-4">
-                {[
-                  "Standardized Tool Discovery",
-                  "Direct Context Injection",
-                  "Zero-Hallucination Booking Flows"
-                ].map((item, i) => (
+                {(t('mcp.points', { returnObjects: true }) as string[]).map((item, i) => (
                   <motion.li 
                     key={i}
                     initial={{ opacity: 0, x: -10 }}
@@ -99,11 +98,11 @@ export const McpSection = () => {
               </div>
 
               <div className="space-y-2 min-h-80">
-                <ChatMessage role="user" text="Find a meeting room for 5 people tomorrow at 2 PM." delay={0.2} />
+                <ChatMessage role="user" text={t('mcp.chat.user')} delay={0.2} />
                 <ChatMessage role="system" text="> CALL list_resources({ capacity: { gte: 5 } })" delay={1.5} />
                 <ChatMessage role="system" text="< Found: 'Conference Room A' (id: res_123)" delay={2.5} />
                 <ChatMessage role="system" text="> CALL create_booking({ resourceId: 'res_123', start: '...' })" delay={3.5} />
-                <ChatMessage role="ai" text="I've booked Conference Room A for you tomorrow at 2 PM. Reference: #bk_987" delay={4.5} />
+                <ChatMessage role="ai" text={t('mcp.chat.ai')} delay={4.5} />
               </div>
 
               {/* Status Indicator */}
@@ -114,7 +113,7 @@ export const McpSection = () => {
                 className="absolute bottom-6 right-6 flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-full"
               >
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span className="text-xs font-medium text-emerald-400">MCP Connected</span>
+                <span className="text-xs font-medium text-emerald-400">{t('mcp.status')}</span>
               </motion.div>
             </motion.div>
           </div>
