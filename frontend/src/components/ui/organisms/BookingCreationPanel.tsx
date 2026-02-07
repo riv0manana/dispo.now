@@ -5,7 +5,8 @@ import { format } from "date-fns";
 import { Button } from "../atoms/Button";
 import { Input } from "../atoms/Input";
 import { FormField } from "../molecules/FormField";
-import { BookingCalendar } from "../../BookingCalendar";
+import { SlotDurationSelector } from "../molecules/SlotDurationSelector";
+import { BookingCalendar } from "./BookingCalendar";
 import { type Resource } from "./ResourceList";
 
 interface BookingCreationPanelProps {
@@ -18,6 +19,14 @@ interface BookingCreationPanelProps {
   onCancel: () => void;
   isSubmitting: boolean;
   error?: string;
+  slotDurationMinutes: number;
+  onSlotDurationChange: (minutes: number) => void;
+  // New props for availability
+  availabilitySlots?: { start: string; end: string; available: number }[];
+  selectedDate: Date | null;
+  onSelectedDateChange: (date: Date | null) => void;
+  isAvailabilityLoading?: boolean;
+  initialSlot?: { start: Date; end: Date };
 }
 
 export function BookingCreationPanel({ 
@@ -28,10 +37,17 @@ export function BookingCreationPanel({
   onSubmit, 
   onCancel, 
   isSubmitting, 
-  error 
+  error,
+  slotDurationMinutes,
+  onSlotDurationChange,
+  availabilitySlots,
+  selectedDate,
+  onSelectedDateChange,
+  isAvailabilityLoading,
+  initialSlot
 }: BookingCreationPanelProps) {
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
+  const [start, setStart] = useState(initialSlot ? format(initialSlot.start, "yyyy-MM-dd'T'HH:mm") : "");
+  const [end, setEnd] = useState(initialSlot ? format(initialSlot.end, "yyyy-MM-dd'T'HH:mm") : "");
   const [quantity, setQuantity] = useState(1);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -50,7 +66,13 @@ export function BookingCreationPanel({
       className="bg-[#161616] border border-zinc-800 rounded-xl p-6 h-fit lg:col-span-3"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-medium text-white">Select a Slot to Book</h3>
+        <div className="flex items-center gap-4">
+          <h3 className="font-medium text-white">Select a Slot to Book</h3>
+          <SlotDurationSelector 
+            value={slotDurationMinutes} 
+            onChange={onSlotDurationChange} 
+          />
+        </div>
         <button onClick={onCancel} className="text-zinc-500 hover:text-white"><X size={16}/></button>
       </div>
       
@@ -62,12 +84,17 @@ export function BookingCreationPanel({
           bookingConfig={resource.bookingConfig as any}
           viewDate={viewDate}
           onViewChange={onViewChange}
+          slotDurationMinutes={slotDurationMinutes}
           onSelectSlot={(s, e) => {
             // Format to "yyyy-MM-dd'T'HH:mm" for datetime-local input (Local Time)
             setStart(format(s, "yyyy-MM-dd'T'HH:mm"));
             setEnd(format(e, "yyyy-MM-dd'T'HH:mm"));
           }}
           selectedSlot={start && end ? { start: new Date(start), end: new Date(end) } : null}
+          availabilitySlots={availabilitySlots}
+          selectedDate={selectedDate}
+          onSelectedDateChange={onSelectedDateChange}
+          isLoading={isAvailabilityLoading}
         />
       </div>
 

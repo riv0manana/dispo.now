@@ -47,7 +47,7 @@ export const McpSection = () => {
                 <span>AI Native Protocol</span>
               </div>
               <h2 className="text-4xl font-bold mb-6 text-white tracking-tight">
-                Ready for the <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Agentic Future</span>
+                Ready for the <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-400">Agentic Future</span>
               </h2>
               <p className="text-zinc-400 text-lg leading-relaxed mb-8">
                 dispo.now isn't just an API for humans. We implement the <strong>Model Context Protocol (MCP)</strong>, allowing AI agents (like Claude, Cursor, or custom LLMs) to discover resources and make bookings autonomously.
@@ -98,7 +98,7 @@ export const McpSection = () => {
                 </div>
               </div>
 
-              <div className="space-y-2 min-h-[320px]">
+              <div className="space-y-2 min-h-80">
                 <ChatMessage role="user" text="Find a meeting room for 5 people tomorrow at 2 PM." delay={0.2} />
                 <ChatMessage role="system" text="> CALL list_resources({ capacity: { gte: 5 } })" delay={1.5} />
                 <ChatMessage role="system" text="< Found: 'Conference Room A' (id: res_123)" delay={2.5} />

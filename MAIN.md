@@ -149,6 +149,10 @@ Implemented via `hybridAuthMiddleware`.
 *   **Activation**: Enabled via `MCP_SERVER` environment variable.
 *   **Capabilities**: Exposes Core Use Cases (`CreateBooking`, `GetResources`, etc.) as AI-callable Tools.
 
+### 6.5 Observability & Health
+*   **HTTP Logging**: Every request is logged with method, path, status code, and duration to stdout to help with debugging and monitoring.
+*   **Health Check**: `GET /health` returns a lightweight JSON payload (e.g. `{ "status": "ok", "uptime": <number> }`) suitable for Docker/Kubernetes health checks and external monitoring.
+
 ---
 
 ## 7. DEPLOYMENT

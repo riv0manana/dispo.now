@@ -1,29 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, Link } from '@tanstack/react-router';
-import { client } from '../lib/sdk';
+import { Link } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 export function LoginRoute() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { login, error, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      await client.login(email, password);
-      navigate({ to: '/dashboard' });
-    } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setError((err as any).response?.data?.message || 'Invalid credentials');
-    } finally {
-      setIsLoading(false);
-    }
+    await login(email, password);
   };
 
   return (

@@ -26,6 +26,9 @@ app.use("/*", securityHeaders);
 // Global Error Handler
 app.onError(errorHandler);
 
+// Health Check
+app.get("/health", (c) => c.json({ status: "ok", uptime: performance.now() }));
+
 // Routes
 app.route("/api/users", users);
 app.route("/api/projects", projects);

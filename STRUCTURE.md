@@ -150,12 +150,15 @@ dispo.now/
 │  │  ├─ middlewares/
 │  │  │  ├─ apiKey.ts
 │  │  │  ├─ auth.ts
+│  │  │  ├─ rateLimit.ts
+│  │  │  ├─ httpLogger.ts
+│  │  │  ├─ securityHeaders.ts
+│  │  │  ├─ errorHandler.ts
 │  │  │  ├─ hybridAuth.ts
 │  │  │
 │  │  ├─ http.ts                      # hono instance
 │  │  ├─ openapi.ts                   # swagger config
 │  │  ├─ types.ts
-│  │  ├─ zod.ts                       # zod config
 │  │
 │  ├─ mcp/                            # MODEL CONTEXT PROTOCOL
 │  │  ├─ server.ts                    # MCP server implementation

@@ -56,7 +56,7 @@ export function ComparisonSection() {
   return (
     <section className="py-24 border-t border-white/5 bg-[#0F0F0F] relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-250 h-125 bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <div className="text-center mb-20">
@@ -101,7 +101,7 @@ export function ComparisonSection() {
                     transition={{ delay: i * 0.1 }}
                     className="relative group"
                 >
-                    <div className="absolute inset-0 bg-gradient-to-b from-zinc-800/20 to-transparent rounded-2xl -z-10" />
+                    <div className="absolute inset-0 bg-linear-to-b from-zinc-800/20 to-transparent rounded-2xl -z-10" />
                     <div className="p-1 rounded-2xl bg-zinc-900 border border-white/5 h-full flex flex-col">
                         
                         {/* Header */}
@@ -132,7 +132,7 @@ export function ComparisonSection() {
 
                         {/* Dispo Side (The Solution) */}
                         <div className="p-6 bg-emerald-500/5 flex-1 rounded-b-xl relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+                            <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-emerald-500/20 to-transparent" />
                             
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">The Solution</span>

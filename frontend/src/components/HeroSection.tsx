@@ -40,7 +40,7 @@ const HeroSection = () => {
                         className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
                     >
                         The Booking <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-cyan-400">
                             Infrastructure.
                         </span>
                     </motion.h1>
@@ -77,7 +77,7 @@ const HeroSection = () => {
                     transition={{ duration: 0.7, delay: 0.2 }}
                     className="relative group"
                 >
-                    <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000"></div>
+                    <div className="absolute -inset-1 bg-linear-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000"></div>
                     <div className="relative rounded-xl border border-white/10 bg-[#161616] shadow-2xl overflow-hidden">
                         <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-white/5">
                             <div className="flex gap-2">

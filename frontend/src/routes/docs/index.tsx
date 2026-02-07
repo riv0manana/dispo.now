@@ -392,19 +392,49 @@ await dispo.createGroupBooking({
         <div className="space-y-4">
           <div>
             <h4 className="font-bold text-red-400">409 Conflict</h4>
-            <p className="text-sm text-zinc-400"><code>CapacityExceeded</code> - The resource does not have enough availability for the requested time/quantity.</p>
+            <p className="text-sm text-zinc-400">
+              <code>CapacityExceeded</code> - The resource does not have enough availability for the requested time/quantity.
+            </p>
           </div>
           <div>
             <h4 className="font-bold text-amber-400">400 Bad Request</h4>
             <p className="text-sm text-zinc-400">
               <code>InvalidTimeRange</code> - Start time is after end time, or duration is zero.<br/>
+              <code>BookingAlreadyCancelled</code> - Attempting to cancel an already cancelled booking.<br/>
               <code>DayNotAllowed</code> - Booking attempts to start/end on a closed day.<br/>
-              <code>StartTimeOutsideConfig</code> - Start time is outside daily operating hours.
+              <code>StartTimeOutsideConfig</code> - Start time is outside daily operating hours.<br/>
+              <code>EndTimeOutsideConfig</code> - End time is outside daily operating hours.<br/>
+              <code>BookingSpansClosedHours</code> - Booking overlaps a closed period.
             </p>
           </div>
           <div>
             <h4 className="font-bold text-zinc-400">401 Unauthorized</h4>
             <p className="text-sm text-zinc-400">Missing or invalid API Key / Token.</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">403 Forbidden</h4>
+            <p className="text-sm text-zinc-400">
+              Accessing a resource or booking that does not belong to the authenticated project.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">404 Not Found</h4>
+            <p className="text-sm text-zinc-400">
+              Resource or booking does not exist (e.g. wrong id).
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">422 ValidationError</h4>
+            <p className="text-sm text-zinc-400">
+              Input payload fails validation. The response includes an <code>issues</code> array with details.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">500 InternalServerError</h4>
+            <p className="text-sm text-zinc-400">
+              Unexpected error. In production, the response is minimal (<code>{"{ \"error\": \"InternalServerError\" }"}</code>);
+              in non-production it may include a <code>message</code> field for debugging.
+            </p>
           </div>
         </div>
       </>
@@ -415,6 +445,17 @@ await dispo.createGroupBooking({
         title: "Error Response",
         content: `{
   "error": "CapacityExceeded"
+}
+
+// Validation Error
+{
+  "error": "ValidationError",
+  "issues": [
+    {
+      "path": ["start"],
+      "message": "Invalid ISO date"
+    }
+  ]
 }`
       }
     ]
@@ -452,11 +493,11 @@ function CodeBlock({ codes }: { codes: { lang: string, title: string, content: s
           </button>
         ))}
         <div className="flex-1"></div>
-        <button onClick={handleCopy} className="p-2 text-zinc-500 hover:text-white transition-colors">
+        <button type="button" onClick={handleCopy} className="p-2 text-zinc-500 hover:text-white transition-colors">
           {copied ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
-      <div className="p-4 overflow-x-auto min-h-[150px]">
+      <div className="p-4 overflow-x-auto min-h-37.5">
         <pre className="font-mono text-sm leading-relaxed text-zinc-300">
           <code className="table w-full">
             {activeCode.content.split('\n').map((line, i) => (
@@ -507,7 +548,7 @@ export function DocsRoute() {
         </div>
       </header>
 
-      <div className="flex pt-16 max-w-[1440px] mx-auto">
+      <div className="flex pt-16 max-w-360 mx-auto">
         {/* Sidebar */}
         <nav className="w-64 fixed top-16 bottom-0 left-0 overflow-y-auto border-r border-zinc-800 bg-[#0F0F0F] hidden lg:block">
           <div className="p-6 space-y-1">

@@ -168,7 +168,7 @@ const CourseVisual = () => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900/50 rounded-xl p-6 relative">
-      <div className="w-full max-w-[200px] space-y-4">
+      <div className="w-full max-w-50 space-y-4">
         <div className="flex justify-between items-end">
           <span className="text-zinc-400 text-sm font-medium">Webinar Capacity</span>
           <span className="text-emerald-400 font-mono text-xl font-bold">{count}<span className="text-zinc-600 text-sm">/50</span></span>
@@ -179,7 +179,7 @@ const CourseVisual = () => {
           <motion.div 
             animate={{ width: `${(count / 50) * 100}%` }}
             transition={{ type: "spring", stiffness: 100 }}
-            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full"
+            className="absolute left-0 top-0 bottom-0 bg-linear-to-r from-emerald-600 to-emerald-400 rounded-full"
           />
         </div>
 
@@ -468,6 +468,7 @@ export function UseCasesSection() {
           <div className="lg:col-span-4 space-y-3">
             {useCases.map((useCase) => (
               <button
+                type="button"
                 key={useCase.id}
                 onClick={() => setActiveTab(useCase)}
                 className={cn(
@@ -503,7 +504,7 @@ export function UseCasesSection() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full min-h-[500px]"
+                className="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full min-h-125"
               >
                 {/* Visual Section (Top/Left) */}
                 <div className="md:w-1/2 border-b md:border-b-0 md:border-r border-zinc-800 bg-zinc-900/20 p-6 flex flex-col">
@@ -517,7 +518,7 @@ export function UseCasesSection() {
                     </p>
                   </div>
                   
-                  <div className="flex-1 min-h-[250px] relative">
+                  <div className="flex-1 min-h-62.5 relative">
                     <activeTab.visual />
                   </div>
                 </div>

@@ -1,5 +1,7 @@
 import { Context } from "hono";
 
+const isProd = Deno.env.get("NODE_ENV") === "production";
+
 export const errorHandler = (err: Error, c: Context) => {
   const knownErrors = [
     "CapacityExceeded",
@@ -57,12 +59,15 @@ export const errorHandler = (err: Error, c: Context) => {
     );
   }
 
-  // Zod Errors (often wrapped or thrown directly depending on usage)
   if (err instanceof Error && "issues" in err) {
     return c.json(
       { error: "ValidationError", issues: (err as any).issues },
-      400,
+      422,
     );
+  }
+
+  if (isProd) {
+    return c.json({ error: "InternalServerError" }, 500);
   }
 
   return c.json({ error: "InternalServerError", message: err.message }, 500);

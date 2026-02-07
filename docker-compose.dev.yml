@@ -1,6 +1,6 @@
 services:
   dispo-app:
-    build: riv0manana/dispo.now:latest
+    build: .
     ports:
       - 8000
     depends_on:
@@ -13,12 +13,6 @@ services:
     restart: unless-stopped
     networks:
       - dokploy-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   dispo-db:
     image: postgres:15-alpine

@@ -94,6 +94,8 @@ export const AvailabilitySlotSchema = z.object({
   available: z.number().int().min(0)
 });
 
+export type AvailabilitySlot = z.infer<typeof AvailabilitySlotSchema>;
+
 // --- Auth Options ---
 export type AuthOptions = {
   apiKey?: string;
@@ -105,6 +107,7 @@ export type AuthOptions = {
 class DispoClient {
   private api: AxiosInstance;
   private token: string | null = null;
+  private onUnauthorizedCallback: (() => void) | null = null;
 
   constructor(baseURL: string = '') {
     const url = baseURL || import.meta.env.VITE_API_URL || ''; 
@@ -114,11 +117,31 @@ class DispoClient {
       headers: { 'Content-Type': 'application/json' },
     });
 
+    // Intercept 401s to trigger callback
+    this.api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          this.logout();
+          if (this.onUnauthorizedCallback) {
+            this.onUnauthorizedCallback();
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
     // Load token from storage if available
     const storedToken = localStorage.getItem('dispo_token');
     if (storedToken) {
       this.setToken(storedToken);
     }
+  }
+
+  // --- Configuration ---
+
+  setOnUnauthorized(callback: () => void) {
+    this.onUnauthorizedCallback = callback;
   }
 
   // --- Auth Management ---
@@ -137,6 +160,10 @@ class DispoClient {
 
   isAuthenticated() {
     return !!this.token;
+  }
+
+  setUnauthorizedHandler(handler: () => void) {
+    this.setOnUnauthorized = handler;
   }
 
   private getAuthHeaders(auth: AuthOptions): Record<string, string> {

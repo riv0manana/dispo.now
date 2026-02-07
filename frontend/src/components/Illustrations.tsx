@@ -44,7 +44,7 @@ export function CapacityIllustration() {
             initial={{ height: 20 }}
             animate={{ height: [20, 60 + (i % 2 === 0 ? 30 : 10), 20] }}
             transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
-            className="w-8 bg-gradient-to-t from-emerald-500 to-emerald-300 rounded-t-sm opacity-80"
+            className="w-8 bg-linear-to-t from-emerald-500 to-emerald-300 rounded-t-sm opacity-80"
          />
        ))}
        <div className="absolute bottom-0 w-full h-px bg-white/20"></div>

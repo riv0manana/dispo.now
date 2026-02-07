@@ -2,6 +2,7 @@ import { format, parseISO } from 'date-fns';
 import { Card } from '../atoms/Card';
 import { Badge } from '../atoms/Badge';
 import { Button } from '../atoms/Button';
+import { SlotDurationSelector } from '../molecules/SlotDurationSelector';
 import { ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -17,6 +18,8 @@ interface AvailabilityViewerProps {
   date: Date;
   onDateChange: (date: Date) => void;
   resourceName?: string;
+  slotDurationMinutes: number;
+  onSlotDurationChange: (minutes: number) => void;
 }
 
 export function AvailabilityViewer({ 
@@ -24,7 +27,10 @@ export function AvailabilityViewer({
   isLoading, 
   date, 
   onDateChange,
-  resourceName 
+  resourceName,
+  slotDurationMinutes,
+  onSlotDurationChange,
+  onSlotClick
 }: AvailabilityViewerProps) {
   
   const handlePrevDay = () => {
@@ -64,6 +70,13 @@ export function AvailabilityViewer({
         </div>
         
         <div className="flex items-center gap-2">
+          <div className="mr-2">
+             <SlotDurationSelector 
+               value={slotDurationMinutes} 
+               onChange={onSlotDurationChange} 
+             />
+          </div>
+
           <Badge variant="neutral" className="border border-zinc-800 bg-zinc-900 text-zinc-300">
             {slots.length} Slots Found
           </Badge>
@@ -102,6 +115,8 @@ export function AvailabilityViewer({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
+                onClick={() => !isFull && onSlotClick?.(date, slot.start, slot.end)}
+                className={!isFull && onSlotClick ? 'cursor-pointer' : ''}
               >
                 <Card className={`
                   relative overflow-hidden transition-all duration-200 hover:border-zinc-600

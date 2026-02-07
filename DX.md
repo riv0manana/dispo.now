@@ -242,7 +242,12 @@ This allows you to reconcile data if needed.
 ### 3. Error Handling
 *   **409 Conflict**: This is a "business logic" state, not a system error. It means "Sold Out". Handle it gracefully in your UI (e.g., "Slot taken, please pick another").
 *   **400 Bad Request**: Usually invalid time range (Start > End) or validation failure.
+*   **401 / 403**: Authentication or ownership issues (missing/invalid credentials, resource does not belong to the project).
+*   **404 Not Found**: Resource or booking does not exist.
+*   **500 InternalServerError**: Unexpected error. In production, the response is `{ "error": "InternalServerError" }` without internal details; in non-production it also includes a `message` field for debugging.
+*   Validation failures may also return `{ "error": "ValidationError", "issues": [...] }`.
 
 ### 4. Security
 *   **Never expose the Bearer Token** in your frontend code. It allows creating/deleting projects.
 *   **API Key** is scoped to the Project. It is safer but still allows creating/cancelling bookings. Ideally, proxy requests through your own backend to enforce your own user permissions (e.g., "Can this user book this resource?").
+*   In production (`NODE_ENV=production`), the HTTP layer attaches common security headers (HSTS, CSP, X-Frame-Options, etc.) to harden your deployment by default.
