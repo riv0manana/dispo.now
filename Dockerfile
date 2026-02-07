@@ -15,6 +15,8 @@ FROM denoland/deno:alpine
 # Create non-root user (Alpine syntax)
 RUN addgroup -S appuser && adduser -S appuser -G appuser
 
+# Create app directory and ensure ownership
+RUN mkdir -p /app && chown -R appuser:appuser /app
 WORKDIR /app
 
 # Ensure Deno cache directory exists and is writable by appuser
