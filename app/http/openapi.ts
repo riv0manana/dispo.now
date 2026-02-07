@@ -286,16 +286,84 @@ export const openapiSpec = {
           available: { type: 'integer', minimum: 0 }
         },
         required: ['start', 'end', 'available']
+      },
+      CancelResponse: {
+        type: 'object',
+        properties: {
+          status: { type: 'string' }
+        },
+        required: ['status']
       }
     }
   },
   paths: {
-    '/api/resources/{id}/availability': {
+    '/api/resources': {
+      post: {
+        summary: 'Create Resource',
+        security: [{ ApiKeyAuth: [] }],
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/CreateResourceRequest' } }
+          }
+        },
+        responses: {
+          201: {
+            description: 'Resource created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Resource' } } }
+          }
+        }
+      },
+      get: {
+        summary: 'List Resources',
+        security: [{ ApiKeyAuth: [] }],
+        responses: {
+          200: {
+            description: 'List of resources',
+            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Resource' } } } }
+          },
+          401: { description: 'Unauthorized' }
+        }
+      }
+    },
+    '/api/resources/{id}': {
+      patch: {
+        summary: 'Update Resource',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+        ],
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/UpdateResourceRequest' } }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Resource updated',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Resource' } } }
+          }
+        }
+      },
+      delete: {
+        summary: 'Delete Resource',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: {
+            description: 'Resource deleted',
+            content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string' }, id: { type: 'string' } } } } }
+          }
+        }
+      }
+    },
+    '/api/resources/{resourceId}/availability': {
       get: {
         summary: 'Get Availability Slots',
         security: [{ ApiKeyAuth: [] }],
         parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
+          { name: 'resourceId', in: 'path', required: true, schema: { type: 'string' } },
           { name: 'start', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
           { name: 'end', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
           { name: 'slotDurationMinutes', in: 'query', required: false, schema: { type: 'integer', minimum: 1, default: 60 } }
@@ -305,6 +373,25 @@ export const openapiSpec = {
             description: 'List of available slots',
             content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/AvailabilitySlot' } } } }
           }
+        }
+      }
+    },
+    '/api/resources/{resourceId}/api/bookings': {
+      get: {
+        summary: 'List Bookings for a Resource',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'resourceId', in: 'path', required: true, schema: { type: 'string' } },
+          { name: 'start', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
+          { name: 'end', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } }
+        ],
+        responses: {
+          200: {
+            description: 'List of bookings',
+            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/BookingResponse' } } } }
+          },
+          400: { description: 'Invalid Time Range' },
+          401: { description: 'Unauthorized' }
         }
       }
     },
@@ -416,56 +503,6 @@ export const openapiSpec = {
         }
       }
     },
-    '/api/resources': {
-      post: {
-        summary: 'Create Resource',
-        security: [{ ApiKeyAuth: [] }],
-        requestBody: {
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/CreateResourceRequest' } }
-          }
-        },
-        responses: {
-          201: {
-            description: 'Resource created',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/Resource' } } }
-          }
-        }
-      }
-    },
-    '/api/resources/{id}': {
-      patch: {
-        summary: 'Update Resource',
-        security: [{ ApiKeyAuth: [] }],
-        parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
-        ],
-        requestBody: {
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/UpdateResourceRequest' } }
-          }
-        },
-        responses: {
-          200: {
-            description: 'Resource updated',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/Resource' } } }
-          }
-        }
-      },
-      delete: {
-        summary: 'Delete Resource',
-        security: [{ ApiKeyAuth: [] }],
-        parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
-        ],
-        responses: {
-          200: {
-            description: 'Resource deleted',
-            content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string' }, id: { type: 'string' } } } } }
-          }
-        }
-      }
-    },
     '/api/bookings': {
       post: {
         summary: 'Create Booking',
@@ -514,6 +551,22 @@ export const openapiSpec = {
             description: 'Recurring Bookings created',
             content: { 'application/json': { schema: { type: 'array', items: { type: 'string' } } } }
           }
+        }
+      }
+    },
+    '/api/bookings/{id}/cancel': {
+      post: {
+        summary: 'Cancel Booking',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: {
+            description: 'Booking cancelled',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/CancelResponse' } } }
+          },
+          401: { description: 'Unauthorized' }
         }
       }
     }

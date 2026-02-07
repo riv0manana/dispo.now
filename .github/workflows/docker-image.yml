@@ -5,8 +5,13 @@ on:
     types: [published]
 
 jobs:
+  test:
+    name: Run Tests
+    uses: ./.github/workflows/ci.yml
+
   build-and-push:
     name: Build and Push Docker Image
+    needs: test
     runs-on: ubuntu-latest
 
     steps:

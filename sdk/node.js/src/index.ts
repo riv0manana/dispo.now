@@ -58,7 +58,16 @@ export const CreateBookingRequestSchema = z.object({
   metadata: z.record(z.string(), z.any()).optional(),
 });
 
-// Schema for the Create Booking response
+export const LoginResponseSchema = z.object({
+  token: z.string(),
+  refreshToken: z.string(),
+});
+
+export const RefreshTokenResponseSchema = z.object({
+  token: z.string(),
+  refreshToken: z.string(),
+});
+
 export const CreateBookingResponseSchema = z.object({
   id: z.string(),
   status: z.string(),
@@ -144,8 +153,18 @@ export class DispoClient {
 
   async login(email: string, password: string) {
     const res = await this.api.post('/api/users/login', { email, password });
-    const data = z.object({ token: z.string() }).parse(res.data);
+    const data = LoginResponseSchema.parse(res.data);
     // Update client state if needed, though typically server-side SDKs are stateless or configured at init
+    if (!this.config.bearerToken) {
+        this.api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+    }
+    return data;
+  }
+
+  async refreshToken(refreshToken: string) {
+    const res = await this.api.post('/api/users/refresh', { refreshToken });
+    const data = RefreshTokenResponseSchema.parse(res.data);
+    
     if (!this.config.bearerToken) {
         this.api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
     }
