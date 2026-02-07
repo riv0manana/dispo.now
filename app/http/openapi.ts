@@ -2,7 +2,7 @@ export const openapiSpec = {
   openapi: '3.0.0',
   info: {
     title: 'dispo.now - Headless Self-Hosted Booking Engine',
-    version: '1.1.1'
+    version: '1.1.2'
   },
   servers: [
     {
