@@ -36,4 +36,4 @@ jobs:
           JWT_SECRET: "ci_test_secret"
           RATE_LIMIT_MAX: 100000
           ALLOWED_ORIGINS: "*"
-        run: deno test --no-check --allow-env --allow-read --allow-net app/tests
+        run: deno task test && deno task test:e2e
