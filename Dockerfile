@@ -10,35 +10,37 @@ COPY frontend/ .
 RUN npm run build
 
 # Stage 2: Setup Deno App
-FROM denoland/deno:2.6.8
+FROM denoland/deno:alpine
 
-# Create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+# Create non-root user (Alpine syntax)
+RUN addgroup -S appuser && adduser -S appuser -G appuser
 
+# Create app directory and ensure ownership
+RUN mkdir -p /app && chown -R appuser:appuser /app
 WORKDIR /app
 
+# Ensure Deno cache directory exists and is writable by appuser
+ENV DENO_DIR=/deno-dir
+RUN mkdir -p /deno-dir && chown -R appuser:appuser /deno-dir
+
 # Copy Deno configuration and lock file
-# Note: deno.lock is copied if it exists, otherwise this might fail if strictly required, 
-# but we confirmed it exists via ls
-COPY deno.json deno.lock ./
+COPY --chown=appuser:appuser deno.json deno.lock ./
 
 # Copy source code
-COPY app/ ./app/
-COPY core/ ./core/
-COPY scripts/ ./scripts/
-COPY drizzle.config.ts ./
+COPY --chown=appuser:appuser app/ ./app/
+COPY --chown=appuser:appuser core/ ./core/
+COPY --chown=appuser:appuser scripts/ ./scripts/
+COPY --chown=appuser:appuser drizzle.config.ts ./
 
 # Copy built frontend assets
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY --chown=appuser:appuser --from=frontend-builder /app/frontend/dist ./frontend/dist
 
+
+# Switch to appuser before caching
+USER appuser
 
 # Cache dependencies
 RUN deno cache app/server.ts scripts/migrate.ts
-
-# Change ownership to non-root user
-RUN chown -R appuser:appuser /app
-
-USER appuser
 
 EXPOSE 8000
 

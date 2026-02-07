@@ -126,6 +126,14 @@ class DispoClient {
         
         // Only retry if it's a 401 and we haven't retried yet
         if (error.response && error.response.status === 401 && !originalRequest._retry) {
+          if (originalRequest.url?.includes('/api/users/refresh')) {
+             this.logout();
+             if (this.onUnauthorizedCallback) {
+               this.onUnauthorizedCallback();
+             }
+             return Promise.reject(error);
+          }
+
           originalRequest._retry = true;
           
           try {

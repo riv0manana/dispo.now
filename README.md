@@ -67,6 +67,32 @@ Our engine adapts to your domain model:
 
 ---
 
+## ☁️ Deployment
+
+### One-Click Deploy
+We provide optimized templates for popular self-hosted PaaS solutions.
+
+#### Coolify
+Use our [Coolify Compose File](./docker-compose.coolify.yml).
+1. Create a new Service in Coolify.
+2. Select "Docker Compose".
+3. Copy/Paste the content of `docker-compose.coolify.yml`.
+4. Deploy!
+
+#### Dokploy
+Use our standard [Dokploy Compose File](./docker-compose.dokploy.yml).
+1. Ensure you have a `dokploy-network` (or remove the network config).
+2. Create a new Application.
+3. Select "Docker Compose".
+4. Deploy!
+
+#### Manual Docker
+```bash
+docker compose -f docker-compose.coolify.yml up -d
+```
+
+---
+
 ## 📚 Documentation
 
 *   [**Main Concepts**](./MAIN.md): Understand the core philosophy and guarantees.
