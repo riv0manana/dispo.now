@@ -1,14 +1,14 @@
-# dispo.now
+# [**dispo.now**](https://dispo-now.riv0manana.dev)
 ### The Self-Hosted Booking Infrastructure
 
 ![License](https://img.shields.io/badge/license-AGPL--v3-blue.svg)
-![Status](https://img.shields.io/badge/status-beta-orange.svg)
+![Status](https://img.shields.io/badge/status-stable-green.svg)
 ![Stack](https://img.shields.io/badge/stack-Deno_Hono_Postgres-green.svg)
 ![AI Ready](https://img.shields.io/badge/AI-Native_MCP-purple.svg)
 
 **The Postgres of Booking Engines.**
 
-`dispo.now` is a self-hosted, high-performance booking infrastructure. It is not a SaaS API. It is a Docker container that you run in your own cloud.
+[**dispo.now**](https://dispo-now.riv0manana.dev) is a self-hosted, high-performance booking infrastructure. It is not a SaaS API. It is a Docker container that you run in your own cloud.
 
 Whether you are building a healthcare platform, a car rental service, or an **AI Agent**, `dispo.now` provides the **ACID guarantees** for time allocation that your database lacks.
 
@@ -94,12 +94,13 @@ To ensure we can continue to offer dual-licensing options, all contributors must
 
 ## 🤝 Sponsorship & Contribution
 
-`dispo.now` is an open-source project born from the need for a robust, generic booking primitive.
+[**dispo.now**](https://dispo-now.riv0manana.dev) is an open-source project born from the need for a robust, generic booking primitive.
 
 ### Support the Project
 Building and maintaining a concurrency-safe engine takes time and coffee. If `dispo.now` saves you weeks of development time, consider supporting us!
 I'd love to be fully self-sustained, so any sponsorship would be greatly appreciated.
 
+*   [**Github Sponsor**](https://github.com/sponsors/riv0manana)
 *   [**Buy Me a Coffee**](https://buymeacoffee.com/riv0manana)
 
 ### Contributing
