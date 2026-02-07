@@ -405,6 +405,7 @@ await dispo.createGroupBooking({
               <code>StartTimeOutsideConfig</code> - Start time is outside daily operating hours.<br/>
               <code>EndTimeOutsideConfig</code> - End time is outside daily operating hours.<br/>
               <code>BookingSpansClosedHours</code> - Booking overlaps a closed period.
+              <code>ValidationError</code> - Input payload fails validation. The response includes an <code>issues</code> array with details.
             </p>
           </div>
           <div>
@@ -421,12 +422,6 @@ await dispo.createGroupBooking({
             <h4 className="font-bold text-zinc-400">404 Not Found</h4>
             <p className="text-sm text-zinc-400">
               Resource or booking does not exist (e.g. wrong id).
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold text-zinc-400">422 ValidationError</h4>
-            <p className="text-sm text-zinc-400">
-              Input payload fails validation. The response includes an <code>issues</code> array with details.
             </p>
           </div>
           <div>

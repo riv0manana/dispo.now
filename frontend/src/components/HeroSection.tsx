@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight, Server } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -23,13 +23,13 @@ const HeroSection = () => {
         <div className="max-w-7xl mx-auto px-6 pt-24 pb-20">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                <motion.div
+                <m.div
                     variants={stagger}
                     initial="initial"
                     animate="animate"
                     className="space-y-8"
                 >
-                    <motion.div
+                    <m.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.5 }}
@@ -37,8 +37,8 @@ const HeroSection = () => {
                     >
                         <Server size={12} />
                         <span>{t('hero.badge')}</span>
-                    </motion.div>
-                    <motion.h1
+                    </m.div>
+                    <m.h1
                         variants={fadeInUp}
                         className="text-5xl lg:text-7xl font-bold tracking-tight leading-[1.1]"
                     >
@@ -46,18 +46,18 @@ const HeroSection = () => {
                         <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-cyan-400">
                             {t('hero.title.part2')}
                         </span>
-                    </motion.h1>
+                    </m.h1>
 
-                    <motion.div variants={fadeInUp} className="text-xl text-zinc-400 max-w-lg leading-relaxed space-y-4">
+                    <m.div variants={fadeInUp} className="text-xl text-zinc-400 max-w-lg leading-relaxed space-y-4">
                         <p className="text-white font-medium text-2xl">
                             {t('hero.subtitle.line1')} <br />{t('hero.subtitle.line2')}
                         </p>
                         <p>
                             {t('hero.description')}
                         </p>
-                    </motion.div>
+                    </m.div>
 
-                    <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <m.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 pt-4">
                         <Link
                             to="/docs"
                             className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-zinc-200 transition-colors"
@@ -70,11 +70,11 @@ const HeroSection = () => {
                         >
                             {t('hero.cta.getApiKey')}
                         </Link>
-                    </motion.div>
-                </motion.div>
+                    </m.div>
+                </m.div>
 
                 {/* Code Snippet */}
-                <motion.div
+                <m.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.7, delay: 0.2 }}
@@ -105,7 +105,7 @@ const HeroSection = () => {
                             </pre>
                         </div>
                     </div>
-                </motion.div>
+                </m.div>
 
             </div>
         </div>

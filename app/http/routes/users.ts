@@ -1,4 +1,5 @@
 import { OpenAPIHono, createRoute } from 'npm:@hono/zod-openapi';
+import { setCookie, getCookie } from 'hono/cookie';
 import { z } from '@/app/zod.ts';
 import { loadDeps } from '@/container/index.ts';
 
@@ -15,7 +16,7 @@ const LoginUserSchema = z.object({
 });
 
 const RefreshTokenSchema = z.object({
-  refreshToken: z.string()
+  refreshToken: z.string().optional()
 });
 
 const UserResponseSchema = z.object({
@@ -91,6 +92,23 @@ users.openapi(
     const uc = loadDeps('LoginUserUseCase');
     try {
       const result = await uc.execute(body);
+      
+      const isProduction = Deno.env.get("NODE_ENV") === "production";
+
+      setCookie(c, 'access_token', result.token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'Strict',
+        path: '/'
+      });
+      
+      setCookie(c, 'refresh_token', result.refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'Strict',
+        path: '/'
+      });
+
       return c.json(result, 200);
     } catch (e: any) {
       if (e.message === 'InvalidCredentials') return c.json({ error: 'InvalidCredentials' }, 401);
@@ -120,10 +138,37 @@ users.openapi(
     }
   }),
   async (c) => {
-    const { refreshToken } = c.req.valid('json');
+    const body = c.req.valid('json');
+    let refreshToken = body.refreshToken;
+    
+    if (!refreshToken) {
+      refreshToken = getCookie(c, 'refresh_token');
+    }
+
+    if (!refreshToken) {
+      return c.json({ error: 'Unauthorized' }, 401);
+    }
+
     const uc = loadDeps('RefreshAccessTokenUseCase');
     try {
       const result = await uc.execute(refreshToken);
+      
+      const isProduction = Deno.env.get("NODE_ENV") === "production";
+      
+      setCookie(c, 'access_token', result.token, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'Strict',
+        path: '/'
+      });
+      
+      setCookie(c, 'refresh_token', result.refreshToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: 'Strict',
+        path: '/'
+      });
+
       return c.json(result, 200);
     } catch (e: any) {
       if (['InvalidRefreshToken', 'ExpiredRefreshToken', 'RevokedRefreshToken', 'UserNotFound'].includes(e.message)) {

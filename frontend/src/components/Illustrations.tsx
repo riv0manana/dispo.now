@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { User, Monitor, Armchair, Database, ShieldCheck, Lock, Terminal, Check, X, Car, Briefcase, Stethoscope } from "lucide-react";
+import { motion } from "framer-motion";
+import { User, Monitor, Armchair, Database, ShieldCheck, Lock, Terminal, Check, X, Car, Stethoscope } from "lucide-react";
 import { useState, useEffect } from "react";
 
 // --- Resource Agnostic Illustration ---

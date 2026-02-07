@@ -15,6 +15,7 @@ interface ProjectAvailabilityViewProps {
   
   slotDuration: number;
   onSlotDurationChange: (minutes: number) => void;
+  onSlotClick: (date: Date, start: string, end: string) => void;
 }
 
 export function ProjectAvailabilityView({

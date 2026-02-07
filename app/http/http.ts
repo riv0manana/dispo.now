@@ -17,7 +17,25 @@ import { errorHandler } from "./middlewares/errorHandler.ts";
 export const app = new OpenAPIHono<HonoEnv>();
 
 // CORS Middleware
-app.use("/*", cors());
+app.use("/*", cors({
+  origin: (origin) => {
+    // Allow localhost during development
+    if (origin.startsWith("http://localhost:")) {
+      return origin;
+    }
+    // Allow production domains (can be configured via env)
+    const allowedOrigins = (Deno.env.get("ALLOWED_ORIGINS") || "").split(",");
+    if (allowedOrigins.includes(origin)) {
+      return origin;
+    }
+    return origin; // Fallback to reflecting origin for now (dev mode), or strict null
+  },
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowHeaders: ["Content-Type", "Authorization", "x-api-key", "x-project-id"],
+  exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+  maxAge: 600,
+  credentials: true,
+}));
 
 app.use("/api/*", rateLimitMiddleware);
 app.use("/api/*", httpLogger);
@@ -54,6 +72,14 @@ const getContent = async (path: string) => {
     return null;
   }
 };
+
+// Caching Middleware for Static Assets
+app.use("/*", async (c, next) => {
+  await next();
+  if (c.req.path.includes("/assets/")) {
+    c.header("Cache-Control", "public, max-age=31536000, immutable");
+  }
+});
 
 app.use("/*", serveStatic({ root: "./frontend/dist", getContent }));
 

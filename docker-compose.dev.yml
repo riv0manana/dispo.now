@@ -10,6 +10,7 @@ services:
       - MCP_SERVER=${MCP_SERVER:-enabled}
       - JWT_SECRET=${JWT_SECRET}
       - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
     restart: unless-stopped
     networks:
       - dokploy-network

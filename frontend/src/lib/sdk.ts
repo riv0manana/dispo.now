@@ -114,28 +114,46 @@ class DispoClient {
     
     this.api = axios.create({
       baseURL: url,
+      withCredentials: true, // Enable cookies
       headers: { 'Content-Type': 'application/json' },
     });
 
-    // Intercept 401s to trigger callback
+    // Intercept 401s to trigger silent refresh
     this.api.interceptors.response.use(
       (response) => response,
-      (error) => {
-        if (error.response && error.response.status === 401) {
-          this.logout();
-          if (this.onUnauthorizedCallback) {
-            this.onUnauthorizedCallback();
+      async (error) => {
+        const originalRequest = error.config;
+        
+        // Only retry if it's a 401 and we haven't retried yet
+        if (error.response && error.response.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+          
+          try {
+            // Attempt silent refresh
+            const res = await this.api.post('/api/users/refresh', {});
+            const data = z.object({ token: z.string() }).parse(res.data);
+            
+            // Update internal token
+            this.setToken(data.token);
+            
+            // Update the header for the retry
+            originalRequest.headers['Authorization'] = `Bearer ${data.token}`;
+            
+            // Retry original request
+            return this.api(originalRequest);
+          } catch (refreshError) {
+            // Refresh failed, now we really logout
+            this.logout();
+            if (this.onUnauthorizedCallback) {
+              this.onUnauthorizedCallback();
+            }
+            return Promise.reject(refreshError);
           }
         }
+        
         return Promise.reject(error);
       }
     );
-
-    // Load token from storage if available
-    const storedToken = localStorage.getItem('dispo_token');
-    if (storedToken) {
-      this.setToken(storedToken);
-    }
   }
 
   // --- Configuration ---
@@ -148,18 +166,29 @@ class DispoClient {
 
   setToken(token: string) {
     this.token = token;
-    localStorage.setItem('dispo_token', token);
     this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   }
 
   logout() {
     this.token = null;
-    localStorage.removeItem('dispo_token');
     delete this.api.defaults.headers.common['Authorization'];
   }
 
   isAuthenticated() {
     return !!this.token;
+  }
+
+  async checkSession() {
+    try {
+      // Call refresh to rotate tokens and verify session
+      const res = await this.api.post('/api/users/refresh', {});
+      const data = z.object({ token: z.string() }).parse(res.data);
+      this.setToken(data.token); // Keep in memory for UI state
+      return true;
+    } catch {
+      this.token = null;
+      return false;
+    }
   }
 
   setUnauthorizedHandler(handler: () => void) {

@@ -1,55 +1,49 @@
 // deno-lint-ignore-file no-sloppy-imports
-import { createRouter, createRoute } from '@tanstack/react-router'
+import { createRouter, createRoute, lazyRouteComponent } from '@tanstack/react-router'
 import { Route as rootRoute } from './routes/__root'
-import { LandingRoute } from './routes/index'
-import { DocsRoute } from './routes/docs/index'
-import { LoginRoute } from './routes/login'
-import { RegisterRoute } from './routes/register'
-import { DashboardLayout } from './components/DashboardLayout'
-import { DashboardIndex } from './routes/dashboard/index'
-import { ProjectDetailRoute } from './routes/dashboard/project'
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: LandingRoute,
+  component: lazyRouteComponent(() => import('./routes/index').then((d) => ({ default: d.LandingRoute }))),
 })
 
 const docsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/docs',
-  component: DocsRoute,
+  component: lazyRouteComponent(() => import('./routes/docs/index').then((d) => ({ default: d.DocsRoute }))),
 })
 
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
-  component: LoginRoute,
+  component: lazyRouteComponent(() => import('./routes/login').then((d) => ({ default: d.LoginRoute }))),
 })
 
 const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/register',
-  component: RegisterRoute,
+  component: lazyRouteComponent(() => import('./routes/register').then((d) => ({ default: d.RegisterRoute }))),
 })
 
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/dashboard',
-  component: DashboardLayout,
+  component: lazyRouteComponent(() => import('./components/DashboardLayout').then((d) => ({ default: d.DashboardLayout }))),
 })
 
 const dashboardIndexRoute = createRoute({
   getParentRoute: () => dashboardRoute,
   path: '/',
-  component: DashboardIndex,
+  component: lazyRouteComponent(() => import('./routes/dashboard/index').then((d) => ({ default: d.DashboardIndex }))),
 })
 
 const projectDetailRoute = createRoute({
   getParentRoute: () => dashboardRoute,
   path: '$projectId',
-  component: ProjectDetailRoute,
+  component: lazyRouteComponent(() => import('./routes/dashboard/project').then((d) => ({ default: d.ProjectDetailRoute }))),
 })
+
 
 const routeTree = rootRoute.addChildren([
   indexRoute,

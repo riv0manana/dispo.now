@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { cn } from "../../../lib/utils";
 
@@ -7,7 +7,7 @@ export function LandingNavbar() {
   const { t, i18n } = useTranslation();
 
   return (
-    <motion.nav
+    <m.nav
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -47,6 +47,6 @@ export function LandingNavbar() {
           </button>
         </div>
       </div>
-    </motion.nav>
+    </m.nav>
   );
 }

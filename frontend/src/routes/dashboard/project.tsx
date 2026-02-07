@@ -174,7 +174,7 @@ export function ProjectDetailRoute() {
           onAvailabilityDateChange={setViewDate}
           slotDuration={slotDuration}
           onSlotDurationChange={setSlotDuration}
-          onSlotClick={(date, start, end) => {
+          onSlotClick={(date: Date, start: string, end: string) => {
             setViewDate(date);
             setBookingAvailabilityDate(date);
             setInitialBookingSlot({ start: parseISO(start), end: parseISO(end) });

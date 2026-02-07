@@ -10,6 +10,7 @@ services:
       - MCP_SERVER=${MCP_SERVER:-enabled}
       - JWT_SECRET=${JWT_SECRET}
       - RATE_LIMIT_MAX=${RATE_LIMIT_MAX:-100}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
     restart: unless-stopped
     networks:
       - dokploy-network
@@ -28,18 +29,6 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - dokploy-network
-  
-  adminer:
-    image: adminer
-    ports:
-      - 8080
-    depends_on:
-      - dispo-db
-    environment:
-      - ADMINER_DEFAULT_SERVER=${DB_HOST:-dispo-db}
     restart: unless-stopped
     networks:
       - dokploy-network

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { Button } from "../atoms/Button";
@@ -33,14 +32,15 @@ interface ProjectBookingViewProps {
   bookingAvailabilitySlots: any[];
   bookingAvailabilityDate: Date | null;
   onBookingAvailabilityDateChange: (date: Date | null) => void;
-  bookingSlotDuration: number;
-  onBookingSlotDurationChange: (minutes: number) => void;
+  slotDuration: number;
+  onSlotDurationChange: (minutes: number) => void;
   isBookingAvailabilityLoading: boolean;
 
   // Actions
   onCancelBooking: (id: string) => void;
   onToggleCreateBooking: (isOpen: boolean) => void;
   onToggleCreateGroupBooking: (isOpen: boolean) => void;
+  initialSlot?: { start: Date; end: Date };
 }
 
 export function ProjectBookingView({

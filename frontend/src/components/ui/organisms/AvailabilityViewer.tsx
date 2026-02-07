@@ -20,6 +20,7 @@ interface AvailabilityViewerProps {
   resourceName?: string;
   slotDurationMinutes: number;
   onSlotDurationChange: (minutes: number) => void;
+  onSlotClick: (date: Date, start: string, end: string) => void;
 }
 
 export function AvailabilityViewer({ 
@@ -115,8 +116,8 @@ export function AvailabilityViewer({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                onClick={() => !isFull && onSlotClick?.(date, slot.start, slot.end)}
-                className={!isFull && onSlotClick ? 'cursor-pointer' : ''}
+                onClick={() => !isFull && onSlotClick(date, slot.start, slot.end)}
+                className={!isFull ? 'cursor-pointer' : ''}
               >
                 <Card className={`
                   relative overflow-hidden transition-all duration-200 hover:border-zinc-600

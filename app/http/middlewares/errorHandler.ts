@@ -62,7 +62,7 @@ export const errorHandler = (err: Error, c: Context) => {
   if (err instanceof Error && "issues" in err) {
     return c.json(
       { error: "ValidationError", issues: (err as any).issues },
-      422,
+      400,
     );
   }
 

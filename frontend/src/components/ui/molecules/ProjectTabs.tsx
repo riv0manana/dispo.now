@@ -1,5 +1,3 @@
-import { type ReactNode } from "react";
-
 interface TabItem {
   id: string;
   label: string;

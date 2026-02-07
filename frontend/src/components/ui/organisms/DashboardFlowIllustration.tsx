@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { m, useScroll, useTransform, useSpring } from "framer-motion";
 import { Folder, Box, Check, MousePointer2, Plus, Calendar, Clock, User, Zap } from "lucide-react";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -18,13 +18,13 @@ export function DashboardFlowIllustration() {
   const opacity = useSpring(useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]), springConfig);
 
   return (
-    <motion.div 
+    <m.div 
       ref={containerRef}
       style={{ scale, opacity }}
       className="relative w-full max-w-6xl mx-auto aspect-auto h-[800px] md:h-auto md:aspect-[21/9] bg-[#0F0F0F] rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl"
     >
       {/* Background Grid with Parallax */}
-      <motion.div 
+      <m.div 
         style={{ y }}
         className="absolute inset-0 opacity-20 pointer-events-none"
       >
@@ -35,14 +35,14 @@ export function DashboardFlowIllustration() {
             backgroundSize: '40px 40px' 
           }}
         />
-      </motion.div>
+      </m.div>
 
       {/* Main Flow Container */}
       <div className="relative z-10 h-full w-full flex items-center justify-center p-8 md:p-12">
         <div className="flex flex-col md:flex-row items-stretch justify-between w-full h-full gap-4 md:gap-8">
           
           {/* Panel 1: Project & Resources (Sidebar) */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -57,7 +57,7 @@ export function DashboardFlowIllustration() {
             </div>
 
             {/* Project Item */}
-            <motion.div 
+            <m.div 
               className="flex items-center gap-3 p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -68,13 +68,13 @@ export function DashboardFlowIllustration() {
                 <div className="h-2 w-20 bg-blue-400/20 rounded mb-1" />
                 <div className="h-1.5 w-12 bg-zinc-700 rounded" />
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Resources List */}
             <div className="space-y-2 mt-2">
               <div className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">{t('dashboard.resources')}</div>
               {[1, 2, 3].map((i) => (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -83,21 +83,21 @@ export function DashboardFlowIllustration() {
                 >
                   <Box size={14} className="text-purple-400" />
                   <div className="h-1.5 w-16 bg-zinc-700 rounded" />
-                </motion.div>
+                </m.div>
               ))}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: 0.8 }}
                 className="flex items-center gap-2 text-zinc-500 text-xs px-2 pt-2"
               >
                 <Plus size={12} /> {t('dashboard.addResource')}
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Panel 2: Booking Calendar (Main Area) */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -121,7 +121,7 @@ export function DashboardFlowIllustration() {
             {/* Calendar Grid Animation */}
             <div className="grid grid-cols-4 gap-3 flex-1">
               {[...Array(8)].map((_, i) => (
-                <motion.div
+                <m.div
                   key={i}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -130,7 +130,7 @@ export function DashboardFlowIllustration() {
                 >
                   <div className="h-1.5 w-8 bg-zinc-800 rounded mb-2" />
                   {i === 2 && (
-                    <motion.div
+                    <m.div
                       initial={{ opacity: 0 }}
                       whileInView={{ opacity: 1 }}
                       transition={{ delay: 1.5 }}
@@ -144,24 +144,24 @@ export function DashboardFlowIllustration() {
                         <User size={10} className="text-emerald-400" />
                         <div className="h-1 w-8 bg-emerald-500/30 rounded" />
                       </div>
-                    </motion.div>
+                    </m.div>
                   )}
-                </motion.div>
+                </m.div>
               ))}
             </div>
 
             {/* Interaction Layer */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: 100, y: 100 }}
               whileInView={{ opacity: 1, x: 0, y: 0 }}
               transition={{ delay: 1.2, duration: 0.8, ease: "circOut" }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none"
             >
               <MousePointer2 size={24} className="text-white drop-shadow-md fill-black" />
-            </motion.div>
+            </m.div>
 
             {/* Success Toast */}
-            <motion.div
+            <m.div
               initial={{ y: 50, opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ delay: 2, type: "spring" }}
@@ -171,11 +171,11 @@ export function DashboardFlowIllustration() {
                 <Check size={14} strokeWidth={3} />
               </div>
               <div className="text-xs font-medium">{t('dashboard.bookingConfirmed')}</div>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
 
           {/* Panel 3: API Log (Sidebar) */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
@@ -183,7 +183,7 @@ export function DashboardFlowIllustration() {
             className="flex flex-1 bg-[#161616] rounded-xl border border-zinc-800 p-4 flex-col gap-3 shadow-lg font-mono text-[10px]"
           >
             <div className="text-zinc-500 uppercase tracking-wider mb-2">{t('dashboard.liveLogs')}</div>
-            <motion.div 
+            <m.div 
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 1 }}
@@ -191,16 +191,16 @@ export function DashboardFlowIllustration() {
             >
               <span>POST</span>
               <span className="text-zinc-400">/api/bookings</span>
-            </motion.div>
-            <motion.div 
+            </m.div>
+            <m.div 
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.2 }}
               className="pl-4 text-zinc-500"
             >
               {t('dashboard.checkingAvailability')}
-            </motion.div>
-            <motion.div 
+            </m.div>
+            <m.div 
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 1.8 }}
@@ -209,11 +209,11 @@ export function DashboardFlowIllustration() {
               <span>201</span>
               <span className="text-zinc-400">{t('dashboard.created')}</span>
               <Zap size={10} className="ml-auto" />
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
 
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }
