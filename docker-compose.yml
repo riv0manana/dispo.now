@@ -1,6 +1,6 @@
 services:
   dispo-app:
-    build: riv0manana/dispo.now:latest
+    image: riv0manana/dispo.now:latest
     ports:
       - 8000
     depends_on:
