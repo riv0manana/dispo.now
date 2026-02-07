@@ -31,9 +31,9 @@ jobs:
 
       - name: Run E2E & Stress Tests
         env:
-          NODE_ENV: test
-          DATABASE_URL: postgres://dummy:dummy@localhost:5432/dummy
-          JWT_SECRET: ci_test_secret
-          RATE_LIMIT_MAX=100: 100
+          NODE_ENV: "test"
+          DATABASE_URL: "postgres://dummy:dummy@localhost:5432/dummy"
+          JWT_SECRET: "ci_test_secret"
+          RATE_LIMIT_MAX: 100000
           ALLOWED_ORIGINS: "*"
         run: deno test --no-check --allow-env --allow-read --allow-net app/tests
