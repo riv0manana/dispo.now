@@ -1,10 +1,12 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { VerifyApiKeyUseCase } from '@/core/application/usecases/VerifyApiKeyUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeProjectRepository } from '@/core/tests/fakes/FakeProjectRepository.ts'
 
 Deno.test('verifies valid api key', async () => {
-  const repo = new FakeProjectRepository()
-  const uc = new VerifyApiKeyUseCase(repo)
+  const repo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const uc = loadDeps('VerifyApiKeyUseCase')
+  
+  repo.clear()
 
   await repo.save({
     id: 'p1',
@@ -19,8 +21,10 @@ Deno.test('verifies valid api key', async () => {
 })
 
 Deno.test('rejects invalid api key', async () => {
-  const repo = new FakeProjectRepository()
-  const uc = new VerifyApiKeyUseCase(repo)
+  const repo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const uc = loadDeps('VerifyApiKeyUseCase')
+  
+  repo.clear()
 
   await assertRejects(
     () => uc.execute('wrong_key'),

@@ -1,8 +1,9 @@
 import { Plus, Loader2 } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { client } from "../../lib/sdk";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
+
+// Domain Hooks
+import { useProjects } from "../../hooks/useProjects";
 
 // Atomic Components
 import { Button } from "../../components/ui/atoms/Button";
@@ -10,50 +11,20 @@ import { ProjectList } from "../../components/ui/organisms/ProjectList";
 import { ProjectEmptyState } from "../../components/ui/organisms/ProjectEmptyState";
 import { ProjectForm } from "../../components/ui/organisms/ProjectForm";
 import { DashboardTemplate } from "../../components/templates/DashboardTemplate";
-import { type Project } from "../../components/ui/organisms/ProjectCard";
 
 export function DashboardIndex() {
-  const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
   const [editingProject, setEditingProject] = useState<{ id: string, name: string } | null>(null);
-  const [createError, setCreateError] = useState("");
 
-  const { data: projects, isLoading } = useQuery({
-    queryKey: ['projects'],
-    queryFn: () => client.getProjects()
-  });
-
-  const createProject = useMutation({
-    mutationFn: async (name: string) => {
-      return await client.createProject(name);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setIsCreating(false);
-      setCreateError("");
-    },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (err: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setCreateError((err as any).response?.data?.message || "Failed to create project");
-    }
-  });
-
-  const updateProject = useMutation({
-    mutationFn: ({ id, name }: { id: string, name: string }) => 
-      client.updateProject(id, { name }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      setEditingProject(null);
-    }
-  });
-
-  const deleteProject = useMutation({
-    mutationFn: (id: string) => client.deleteProject(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-    }
-  });
+  const {
+    projects,
+    isLoading,
+    createProject,
+    updateProject,
+    deleteProject,
+    createError,
+    setCreateError
+  } = useProjects();
 
   if (isLoading) {
     return <div className="flex h-full items-center justify-center"><Loader2 className="animate-spin text-zinc-500" /></div>;
@@ -76,7 +47,11 @@ export function DashboardIndex() {
             {isCreating && (
               <ProjectForm
                 mode="create"
-                onSubmit={(name) => createProject.mutate(name)}
+                onSubmit={(name) => {
+                  createProject.mutate(name, {
+                    onSuccess: () => setIsCreating(false)
+                  });
+                }}
                 onCancel={() => {
                   setIsCreating(false);
                   setCreateError("");
@@ -92,7 +67,11 @@ export function DashboardIndex() {
               <ProjectForm
                 mode="edit"
                 initialName={editingProject.name}
-                onSubmit={(name) => updateProject.mutate({ id: editingProject.id, name })}
+                onSubmit={(name) => {
+                  updateProject.mutate({ id: editingProject.id, name }, {
+                    onSuccess: () => setEditingProject(null)
+                  });
+                }}
                 onCancel={() => setEditingProject(null)}
                 isSubmitting={updateProject.isPending}
               />
@@ -105,7 +84,7 @@ export function DashboardIndex() {
         <ProjectEmptyState onCreate={() => setIsCreating(true)} />
       ) : (
         <ProjectList
-          projects={projects as Project[]}
+          projects={projects}
           onEdit={(p) => setEditingProject(p)}
           onDelete={(id) => {
              if (confirm('Are you sure you want to delete this project?')) {

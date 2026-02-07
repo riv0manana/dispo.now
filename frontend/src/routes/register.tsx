@@ -1,31 +1,16 @@
 import { useState } from 'react';
-import { useNavigate, Link } from '@tanstack/react-router';
-import { client } from '../lib/sdk';
+import { Link } from '@tanstack/react-router';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 export function RegisterRoute() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const { register, error, isLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      await client.register(email, password);
-      // Auto login after register
-      await client.login(email, password);
-      navigate({ to: '/dashboard' });
-    } catch (err: unknown) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setError((err as any).response?.data?.message || 'Registration failed');
-    } finally {
-      setIsLoading(false);
-    }
+    await register(email, password);
   };
 
   return (

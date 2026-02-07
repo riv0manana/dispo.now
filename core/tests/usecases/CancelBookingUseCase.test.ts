@@ -1,11 +1,13 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { CancelBookingUseCase } from '@/core/application/usecases/CancelBookingUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { Booking } from '@/core/domain/booking/Booking.schema.ts'
 
 Deno.test('cancels an active booking', async () => {
-  const repo = new FakeBookingRepository()
-  const uc = new CancelBookingUseCase(repo)
+  const repo = loadDeps('BookingRepository') as FakeBookingRepository
+  const uc = loadDeps('CancelBookingUseCase')
+  
+  repo.clear()
 
   const booking: Booking = {
     id: 'id1',
@@ -28,8 +30,10 @@ Deno.test('cancels an active booking', async () => {
 })
 
 Deno.test('throws if booking not found', async () => {
-  const repo = new FakeBookingRepository()
-  const uc = new CancelBookingUseCase(repo)
+  const repo = loadDeps('BookingRepository') as FakeBookingRepository
+  const uc = loadDeps('CancelBookingUseCase')
+  
+  repo.clear()
 
   await assertRejects(
     () => uc.execute('missing', 'p'),
@@ -39,8 +43,10 @@ Deno.test('throws if booking not found', async () => {
 })
 
 Deno.test('throws if already cancelled', async () => {
-  const repo = new FakeBookingRepository()
-  const uc = new CancelBookingUseCase(repo)
+  const repo = loadDeps('BookingRepository') as FakeBookingRepository
+  const uc = loadDeps('CancelBookingUseCase')
+  
+  repo.clear()
 
   const booking: Booking = {
     id: 'id1',

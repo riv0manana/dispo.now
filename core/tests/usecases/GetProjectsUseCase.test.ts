@@ -1,10 +1,12 @@
 import { assertEquals } from 'std/assert/mod.ts'
-import { GetProjectsUseCase } from '@/core/application/usecases/GetProjectsUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeProjectRepository } from '@/core/tests/fakes/FakeProjectRepository.ts'
 
 Deno.test('lists projects by user', async () => {
-  const repo = new FakeProjectRepository()
-  const uc = new GetProjectsUseCase(repo)
+  const repo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const uc = loadDeps('GetProjectsUseCase')
+  
+  repo.clear()
 
   await repo.save({ id: 'p1', userId: 'u1', name: 'P1', apiKey: 'k1', metadata: {} })
   await repo.save({ id: 'p2', userId: 'u2', name: 'P2', apiKey: 'k2', metadata: {} })

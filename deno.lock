@@ -19,6 +19,7 @@
     "npm:@libsql/client@0.6": "0.6.2",
     "npm:@modelcontextprotocol/sdk@*": "1.26.0_zod@3.25.76_hono@4.11.7_ajv@8.17.1_express@5.2.1",
     "npm:bcryptjs@^2.4.3": "2.4.3",
+    "npm:drizzle-kit@*": "0.20.18_hono@4.11.7_zod@3.25.76_esbuild@0.19.12",
     "npm:drizzle-kit@~0.20.14": "0.20.18_hono@4.11.7_zod@3.25.76_esbuild@0.19.12",
     "npm:drizzle-orm@~0.29.3": "0.29.5_@libsql+client@0.6.2_postgres@3.4.8",
     "npm:hono@4": "4.11.7",

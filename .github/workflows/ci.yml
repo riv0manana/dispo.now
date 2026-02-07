@@ -5,14 +5,22 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_call:
 
+permissions:
+  contents: read
+  pull-requests: write
+  
 jobs:
   test:
     name: Run Tests
-    permissions:
-      contents: read
-      pull-requests: write
     runs-on: ubuntu-latest
+    env:
+      NODE_ENV: "test"
+      DATABASE_URL: "postgres://dummy:dummy@localhost:5432/dummy"
+      JWT_SECRET: "ci_test_secret"
+      RATE_LIMIT_MAX: 100000
+      ALLOWED_ORIGINS: "*"
 
     steps:
       - name: Checkout Repository
@@ -28,7 +36,4 @@ jobs:
         run: deno test --allow-env --allow-read core/tests
 
       - name: Run E2E & Stress Tests
-        env:
-          NODE_ENV: test
-          DATABASE_URL: postgres://dummy:dummy@localhost:5432/dummy
-        run: deno test --no-check --allow-env --allow-read --allow-net app/tests
+        run: deno task test && deno task test:e2e

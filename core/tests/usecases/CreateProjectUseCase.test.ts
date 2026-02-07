@@ -1,14 +1,12 @@
-import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { CreateProjectUseCase } from '@/core/application/usecases/CreateProjectUseCase.ts'
+import { assertEquals, assertStringIncludes } from 'std/assert/mod.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeProjectRepository } from '@/core/tests/fakes/FakeProjectRepository.ts'
 
 Deno.test('creates project with api key', async () => {
-  const repo = new FakeProjectRepository()
-  const uc = new CreateProjectUseCase(
-    repo,
-    { generate: () => 'p1' },
-    { generate: () => 'api_key_secret' }
-  )
+  const repo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const uc = loadDeps('CreateProjectUseCase')
+  
+  repo.clear()
 
   const result = await uc.execute({
     userId: 'user_1',
@@ -16,10 +14,9 @@ Deno.test('creates project with api key', async () => {
     metadata: { key: 'value' }
   })
 
-  assertEquals(result.id, 'p1')
-  assertEquals(result.apiKey, 'api_key_secret')
+  assertStringIncludes(result.apiKey, 'sk_live_')
 
-  const stored = await repo.findById('p1')
-  assertEquals(stored?.apiKey, 'api_key_secret')
+  const stored = await repo.findById(result.id)
+  assertEquals(stored?.apiKey, result.apiKey)
   assertEquals(stored?.userId, 'user_1')
 })

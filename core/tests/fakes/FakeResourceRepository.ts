@@ -20,4 +20,8 @@ export class FakeResourceRepository implements ResourceRepository {
   async delete(id: string) {
     this.items = this.items.filter(r => r.id !== id)
   }
+
+  clear() {
+    this.items = []
+  }
 }

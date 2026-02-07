@@ -1,6 +1,6 @@
 import { OpenAPIHono, createRoute } from 'npm:@hono/zod-openapi'
 import { z } from '@/app/zod.ts'
-import { container } from '@/container/index.ts'
+import { loadDeps } from '@/container/index.ts'
 import { hybridAuthMiddleware } from '../middlewares/hybridAuth.ts'
 import { CreateResourceUseCase } from '@/core/application/usecases/CreateResourceUseCase.ts'
 import { UpdateResourceUseCase } from '@/core/application/usecases/UpdateResourceUseCase.ts'
@@ -103,7 +103,7 @@ resources.openapi(
       return c.json({ error: 'Forbidden: ProjectId mismatch' }, 403)
     }
 
-    const useCase = container.get('CreateResourceUseCase') as CreateResourceUseCase
+    const useCase = loadDeps('CreateResourceUseCase')
     
     const result = await useCase.execute({
       projectId: authenticatedProjectId,
@@ -147,7 +147,7 @@ resources.openapi(
     const authenticatedProjectId = c.get('projectId')
     if (!authenticatedProjectId) return c.json({ error: 'Unauthorized' }, 401)
     
-    const useCase = container.get('GetResourcesUseCase') as GetResourcesUseCase
+    const useCase = loadDeps('GetResourcesUseCase')
     const result = await useCase.execute(authenticatedProjectId)
 
     return c.json(result, 200)
@@ -193,7 +193,7 @@ resources.openapi(
     const resourceId = c.req.param('id')
     const body = c.req.valid('json')
     
-    const useCase = container.get('UpdateResourceUseCase') as UpdateResourceUseCase
+    const useCase = loadDeps('UpdateResourceUseCase')
     
     await useCase.execute({
       resourceId,
@@ -202,7 +202,7 @@ resources.openapi(
     })
 
     // Fetch updated resource
-    const getUseCase = container.get('GetResourcesUseCase') as GetResourcesUseCase
+    const getUseCase = loadDeps('GetResourcesUseCase')
     const resources = await getUseCase.execute(authenticatedProjectId)
     const resource = resources.find(r => r.id === resourceId)
     
@@ -246,7 +246,7 @@ resources.openapi(
     
     const resourceId = c.req.param('id')
     
-    const useCase = container.get('DeleteResourceUseCase') as DeleteResourceUseCase
+    const useCase = loadDeps('DeleteResourceUseCase')
     
     await useCase.execute({
       resourceId,
@@ -257,11 +257,11 @@ resources.openapi(
   }
 )
 
-// GET /:resourceId/bookings
+// GET /:resourceId/api/bookings
 resources.openapi(
   createRoute({
     method: 'get',
-    path: '/{resourceId}/bookings',
+    path: '/{resourceId}/api/bookings',
     summary: 'List Bookings for a Resource',
     middleware: [hybridAuthMiddleware] as any,
     request: {
@@ -296,7 +296,7 @@ resources.openapi(
       return c.json({ error: 'InvalidTimeRange' }, 400)
     }
 
-    const useCase = container.get('GetBookingsUseCase') as GetBookingsUseCase
+    const useCase = loadDeps('GetBookingsUseCase')
     
     const result = await useCase.execute({
       projectId: authenticatedProjectId,
@@ -345,7 +345,7 @@ resources.openapi(
     const authenticatedProjectId = c.get('projectId')
     if (!authenticatedProjectId) return c.json({ error: 'Unauthorized' }, 401)
 
-    const useCase = container.get('GetAvailabilityUseCase') as GetAvailabilityUseCase
+    const useCase = loadDeps('GetAvailabilityUseCase')
     
     const slots = await useCase.execute({
       projectId: authenticatedProjectId,

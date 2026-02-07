@@ -2,7 +2,7 @@ export const openapiSpec = {
   openapi: '3.0.0',
   info: {
     title: 'dispo.now - Headless Self-Hosted Booking Engine',
-    version: '1.1.0-beta'
+    version: '1.1.0'
   },
   servers: [
     {
@@ -50,9 +50,17 @@ export const openapiSpec = {
       LoginResponse: {
         type: 'object',
         properties: {
-          token: { type: 'string' }
+          token: { type: 'string' },
+          refreshToken: { type: 'string' }
         },
-        required: ['token']
+        required: ['token', 'refreshToken']
+      },
+      RefreshTokenRequest: {
+        type: 'object',
+        properties: {
+          refreshToken: { type: 'string' }
+        },
+        required: ['refreshToken']
       },
       Project: {
         type: 'object',
@@ -278,121 +286,18 @@ export const openapiSpec = {
           available: { type: 'integer', minimum: 0 }
         },
         required: ['start', 'end', 'available']
+      },
+      CancelResponse: {
+        type: 'object',
+        properties: {
+          status: { type: 'string' }
+        },
+        required: ['status']
       }
     }
   },
   paths: {
-    '/resources/{id}/availability': {
-      get: {
-        summary: 'Get Availability Slots',
-        security: [{ ApiKeyAuth: [] }],
-        parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
-          { name: 'start', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
-          { name: 'end', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
-          { name: 'slotDurationMinutes', in: 'query', required: false, schema: { type: 'integer', minimum: 1, default: 60 } }
-        ],
-        responses: {
-          200: {
-            description: 'List of available slots',
-            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/AvailabilitySlot' } } } }
-          }
-        }
-      }
-    },
-    '/users': {
-      post: {
-        summary: 'Create Account',
-        requestBody: {
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/CreateUserRequest' } }
-          }
-        },
-        responses: {
-          201: {
-            description: 'User created',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/User' } } }
-          }
-        }
-      }
-    },
-    '/users/login': {
-      post: {
-        summary: 'Login',
-        requestBody: {
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/LoginRequest' } }
-          }
-        },
-        responses: {
-          200: {
-            description: 'Login successful',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/LoginResponse' } } }
-          }
-        }
-      }
-    },
-    '/projects': {
-      post: {
-        summary: 'Create Project',
-        security: [{ BearerAuth: [] }],
-        requestBody: {
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/CreateProjectRequest' } }
-          }
-        },
-        responses: {
-          201: {
-            description: 'Project created',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/CreateProjectResponse' } } }
-          }
-        }
-      },
-      get: {
-        summary: 'List Projects',
-        security: [{ BearerAuth: [] }],
-        responses: {
-          200: {
-            description: 'List of projects',
-            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Project' } } } }
-          }
-        }
-      }
-    },
-    '/projects/{id}': {
-      patch: {
-        summary: 'Update Project',
-        security: [{ BearerAuth: [] }],
-        parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
-        ],
-        requestBody: {
-          content: {
-            'application/json': { schema: { $ref: '#/components/schemas/UpdateProjectRequest' } }
-          }
-        },
-        responses: {
-          200: {
-            description: 'Project updated',
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/Project' } } }
-          }
-        }
-      },
-      delete: {
-        summary: 'Delete Project',
-        security: [{ BearerAuth: [] }],
-        parameters: [
-          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
-        ],
-        responses: {
-          200: {
-            description: 'Project deleted',
-            content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string' }, id: { type: 'string' } } } } }
-          }
-        }
-      }
-    },
-    '/resources': {
+    '/api/resources': {
       post: {
         summary: 'Create Resource',
         security: [{ ApiKeyAuth: [] }],
@@ -407,9 +312,20 @@ export const openapiSpec = {
             content: { 'application/json': { schema: { $ref: '#/components/schemas/Resource' } } }
           }
         }
+      },
+      get: {
+        summary: 'List Resources',
+        security: [{ ApiKeyAuth: [] }],
+        responses: {
+          200: {
+            description: 'List of resources',
+            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Resource' } } } }
+          },
+          401: { description: 'Unauthorized' }
+        }
       }
     },
-    '/resources/{id}': {
+    '/api/resources/{id}': {
       patch: {
         summary: 'Update Resource',
         security: [{ ApiKeyAuth: [] }],
@@ -442,7 +358,152 @@ export const openapiSpec = {
         }
       }
     },
-    '/bookings': {
+    '/api/resources/{resourceId}/availability': {
+      get: {
+        summary: 'Get Availability Slots',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'resourceId', in: 'path', required: true, schema: { type: 'string' } },
+          { name: 'start', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
+          { name: 'end', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
+          { name: 'slotDurationMinutes', in: 'query', required: false, schema: { type: 'integer', minimum: 1, default: 60 } }
+        ],
+        responses: {
+          200: {
+            description: 'List of available slots',
+            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/AvailabilitySlot' } } } }
+          }
+        }
+      }
+    },
+    '/api/resources/{resourceId}/api/bookings': {
+      get: {
+        summary: 'List Bookings for a Resource',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'resourceId', in: 'path', required: true, schema: { type: 'string' } },
+          { name: 'start', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } },
+          { name: 'end', in: 'query', required: true, schema: { type: 'string', format: 'date-time' } }
+        ],
+        responses: {
+          200: {
+            description: 'List of bookings',
+            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/BookingResponse' } } } }
+          },
+          400: { description: 'Invalid Time Range' },
+          401: { description: 'Unauthorized' }
+        }
+      }
+    },
+    '/api/users': {
+      post: {
+        summary: 'Create Account',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/CreateUserRequest' } }
+          }
+        },
+        responses: {
+          201: {
+            description: 'User created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/User' } } }
+          }
+        }
+      }
+    },
+    '/api/users/login': {
+      post: {
+        summary: 'Login',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/LoginRequest' } }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Login successful',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/LoginResponse' } } }
+          }
+        }
+      }
+    },
+    '/api/users/refresh': {
+      post: {
+        summary: 'Refresh Token',
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/RefreshTokenRequest' } }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Token refreshed',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/LoginResponse' } } }
+          }
+        }
+      }
+    },
+    '/api/projects': {
+      post: {
+        summary: 'Create Project',
+        security: [{ BearerAuth: [] }],
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/CreateProjectRequest' } }
+          }
+        },
+        responses: {
+          201: {
+            description: 'Project created',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/CreateProjectResponse' } } }
+          }
+        }
+      },
+      get: {
+        summary: 'List Projects',
+        security: [{ BearerAuth: [] }],
+        responses: {
+          200: {
+            description: 'List of projects',
+            content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Project' } } } }
+          }
+        }
+      }
+    },
+    '/api/projects/{id}': {
+      patch: {
+        summary: 'Update Project',
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+        ],
+        requestBody: {
+          content: {
+            'application/json': { schema: { $ref: '#/components/schemas/UpdateProjectRequest' } }
+          }
+        },
+        responses: {
+          200: {
+            description: 'Project updated',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/Project' } } }
+          }
+        }
+      },
+      delete: {
+        summary: 'Delete Project',
+        security: [{ BearerAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: {
+            description: 'Project deleted',
+            content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string' }, id: { type: 'string' } } } } }
+          }
+        }
+      }
+    },
+    '/api/bookings': {
       post: {
         summary: 'Create Booking',
         security: [{ ApiKeyAuth: [] }],
@@ -459,7 +520,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/bookings/group': {
+    '/api/bookings/group': {
       post: {
         summary: 'Create Group Booking',
         security: [{ ApiKeyAuth: [] }],
@@ -476,7 +537,7 @@ export const openapiSpec = {
         }
       }
     },
-    '/bookings/recurring': {
+    '/api/bookings/recurring': {
       post: {
         summary: 'Create Recurring Booking',
         security: [{ ApiKeyAuth: [] }],
@@ -490,6 +551,22 @@ export const openapiSpec = {
             description: 'Recurring Bookings created',
             content: { 'application/json': { schema: { type: 'array', items: { type: 'string' } } } }
           }
+        }
+      }
+    },
+    '/api/bookings/{id}/cancel': {
+      post: {
+        summary: 'Cancel Booking',
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          { name: 'id', in: 'path', required: true, schema: { type: 'string' } }
+        ],
+        responses: {
+          200: {
+            description: 'Booking cancelled',
+            content: { 'application/json': { schema: { $ref: '#/components/schemas/CancelResponse' } } }
+          },
+          401: { description: 'Unauthorized' }
         }
       }
     }

@@ -1,12 +1,15 @@
 import { assertEquals } from 'std/assert/mod.ts'
-import { GetBookingsUseCase } from '@/core/application/usecases/GetBookingsUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 
 Deno.test('lists bookings overlapping time range', async () => {
-  const repo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new GetBookingsUseCase(repo, resourceRepo)
+  const repo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetBookingsUseCase')
+  
+  repo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
 

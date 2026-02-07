@@ -1,14 +1,15 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
-import { FakeTransactionManager } from '@/core/tests/fakes/FakeTransactionManager.ts'
-import { FakeLockService } from '@/core/tests/fakes/FakeLockService.ts'
 
 Deno.test('creates booking within capacity', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id1' }, new FakeTransactionManager(), new FakeLockService())
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('CreateBookingUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({ id: 'r', projectId: 'p', name: 'R', defaultCapacity: 1, metadata: {} })
 
@@ -21,13 +22,16 @@ Deno.test('creates booking within capacity', async () => {
     metadata: {}
   })
 
-  assertEquals(id, 'id1')
+  assertEquals(typeof id, 'string')
 })
 
 Deno.test('rejects capacity overflow', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new CreateBookingUseCase(bookingRepo, resourceRepo, { generate: () => 'id' }, new FakeTransactionManager(), new FakeLockService())
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('CreateBookingUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({ id: 'r', projectId: 'p', name: 'R', defaultCapacity: 1, metadata: {} })
 

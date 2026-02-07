@@ -1,11 +1,13 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { UpdateResourceUseCase } from '@/core/application/usecases/UpdateResourceUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 import { ResourceSchema } from '@/core/domain/resource/Resource.schema.ts'
 
 Deno.test('UpdateResourceUseCase', async (t) => {
-  const repo = new FakeResourceRepository()
-  const useCase = new UpdateResourceUseCase(repo)
+  const repo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const useCase = loadDeps('UpdateResourceUseCase')
+  
+  repo.clear()
 
   const resource = ResourceSchema.parse({
     id: 'res-1',

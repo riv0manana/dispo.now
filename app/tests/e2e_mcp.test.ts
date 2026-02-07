@@ -50,7 +50,7 @@ Deno.test('E2E: MCP Agent Journey', async (t) => {
 
   // 0. Setup User (via REST API first, as MCP login requires existing user)
   await t.step('Setup: Register User via API', async () => {
-    const res = await app.request('/users', {
+    const res = await app.request('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })

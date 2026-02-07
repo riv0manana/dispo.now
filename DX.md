@@ -64,21 +64,21 @@ sequenceDiagram
     participant DB as Dispo DB
 
     Note over YourApp, Dispo: SETUP PHASE (One-time)
-    YourApp->>Dispo: POST /projects (Create Tenant)
+    YourApp->>Dispo: POST /api/projects (Create Tenant)
     Dispo-->>YourApp: { id: "proj_123", apiKey: "sk_live_..." }
     
-    YourApp->>Dispo: POST /resources (Create Inventory)
+    YourApp->>Dispo: POST /api/resources (Create Inventory)
     Dispo-->>YourApp: { id: "res_car_1", name: "Tesla Model 3" }
 
     Note over EndUser, Dispo: RUNTIME PHASE
 
     EndUser->>YourApp: "I want to book a car"
-    YourApp->>Dispo: GET /resources/res_car_1/bookings
+    YourApp->>Dispo: GET /api/resources/res_car_1/api/bookings
     Dispo-->>YourApp: [Existing Bookings...]
     YourApp-->>EndUser: Show Available Slots
 
     EndUser->>YourApp: "Book 10:00 - 11:00"
-    YourApp->>Dispo: POST /bookings
+    YourApp->>Dispo: POST /api/bookings
     Note right of YourApp: Header: x-api-key: sk_live_...
     
     alt Capacity Available
@@ -104,7 +104,7 @@ sequenceDiagram
 
 **Setup**:
 ```json
-// POST /resources
+// POST /api/resources
 {
   "name": "Tesla Model 3 #42",
   "defaultCapacity": 1,
@@ -114,7 +114,7 @@ sequenceDiagram
 
 **Booking**:
 ```json
-// POST /bookings
+// POST /api/bookings
 {
   "resourceId": "res_tesla_42",
   "start": "2024-06-01T10:00:00Z",
@@ -133,7 +133,7 @@ sequenceDiagram
 
 **Booking**:
 ```json
-// POST /bookings/group
+// POST /api/bookings/group
 {
   "projectId": "proj_hospital_A",
   "bookings": [
@@ -160,7 +160,7 @@ sequenceDiagram
 
 **Setup**:
 ```json
-// POST /resources
+// POST /api/resources
 {
   "name": "Intro to React Webinar",
   "defaultCapacity": 50,
@@ -172,7 +172,7 @@ sequenceDiagram
 
 **Booking**:
 ```json
-// POST /bookings
+// POST /api/bookings
 {
   "resourceId": "res_webinar_01",
   "start": "2024-06-10T18:00:00Z",
@@ -188,12 +188,12 @@ sequenceDiagram
 
 **Workflow**:
 1.  **New Signup**: When "Salon A" signs up for your SaaS:
-    *   You call `POST /projects` -> Name: "Salon A".
+    *   You call `POST /api/projects` -> Name: "Salon A".
     *   Save the returned `apiKey` in your database associated with "Salon A".
 2.  **Resource Creation**: When Salon A adds a "Stylist":
-    *   You call `POST /resources` using **Salon A's API Key**.
+    *   You call `POST /api/resources` using **Salon A's API Key**.
 3.  **Booking**: When a customer books Salon A:
-    *   You call `POST /bookings` using **Salon A's API Key**.
+    *   You call `POST /api/bookings` using **Salon A's API Key**.
 
 *Benefit*: Data is completely isolated. Salon A cannot see Salon B's bookings.
 
@@ -242,7 +242,12 @@ This allows you to reconcile data if needed.
 ### 3. Error Handling
 *   **409 Conflict**: This is a "business logic" state, not a system error. It means "Sold Out". Handle it gracefully in your UI (e.g., "Slot taken, please pick another").
 *   **400 Bad Request**: Usually invalid time range (Start > End) or validation failure.
+*   **401 / 403**: Authentication or ownership issues (missing/invalid credentials, resource does not belong to the project).
+*   **404 Not Found**: Resource or booking does not exist.
+*   **500 InternalServerError**: Unexpected error. In production, the response is `{ "error": "InternalServerError" }` without internal details; in non-production it also includes a `message` field for debugging.
+*   Validation failures may also return `{ "error": "ValidationError", "issues": [...] }`.
 
 ### 4. Security
 *   **Never expose the Bearer Token** in your frontend code. It allows creating/deleting projects.
 *   **API Key** is scoped to the Project. It is safer but still allows creating/cancelling bookings. Ideally, proxy requests through your own backend to enforce your own user permissions (e.g., "Can this user book this resource?").
+*   In production (`NODE_ENV=production`), the HTTP layer attaches common security headers (HSTS, CSP, X-Frame-Options, etc.) to harden your deployment by default.

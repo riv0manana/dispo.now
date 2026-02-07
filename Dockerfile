@@ -12,6 +12,9 @@ RUN npm run build
 # Stage 2: Setup Deno App
 FROM denoland/deno:2.6.8
 
+# Create non-root user
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
 WORKDIR /app
 
 # Copy Deno configuration and lock file
@@ -31,6 +34,11 @@ COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 # Cache dependencies
 RUN deno cache app/server.ts scripts/migrate.ts
+
+# Change ownership to non-root user
+RUN chown -R appuser:appuser /app
+
+USER appuser
 
 EXPOSE 8000
 

@@ -1,16 +1,21 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { CreateResourceUseCase } from '@/core/application/usecases/CreateResourceUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 import { FakeProjectRepository } from '@/core/tests/fakes/FakeProjectRepository.ts'
 
 Deno.test('creates resource successfully', async () => {
-  const resourceRepo = new FakeResourceRepository()
-  const projectRepo = new FakeProjectRepository()
-  const uc = new CreateResourceUseCase(resourceRepo, projectRepo, { generate: () => 'r1' })
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const projectRepo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const uc = loadDeps('CreateResourceUseCase')
+  const tk = loadDeps('IdGenerator')
+  
+  resourceRepo.clear()
+  projectRepo.clear()
 
   // Setup existing project
+  const pId = tk.generate()
   await projectRepo.save({
-    id: 'p1',
+    id: pId,
     userId: 'u1',
     name: 'Project 1',
     apiKey: 'k1',
@@ -18,24 +23,26 @@ Deno.test('creates resource successfully', async () => {
   })
 
   const id = await uc.execute({
-    projectId: 'p1',
+    projectId: pId,
     name: 'Meeting Room A',
     defaultCapacity: 5,
     metadata: { type: 'room' } // Users can use metadata for typing if they want
   })
 
-  assertEquals(id, 'r1')
 
-  const stored = await resourceRepo.findById('r1')
-  assertEquals(stored?.projectId, 'p1')
+  const stored = await resourceRepo.findById(id)
+  assertEquals(stored?.projectId, pId)
   assertEquals(stored?.defaultCapacity, 5)
   assertEquals(stored?.metadata, { type: 'room' })
 })
 
 Deno.test('fails to create resource if project missing', async () => {
-  const resourceRepo = new FakeResourceRepository()
-  const projectRepo = new FakeProjectRepository()
-  const uc = new CreateResourceUseCase(resourceRepo, projectRepo, { generate: () => 'r1' })
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const projectRepo = loadDeps('ProjectRepository') as FakeProjectRepository
+  const uc = loadDeps('CreateResourceUseCase')
+  
+  resourceRepo.clear()
+  projectRepo.clear()
 
   await assertRejects(
     () => uc.execute({

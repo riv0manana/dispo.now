@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { 
   Car, 
   Stethoscope, 
@@ -17,11 +18,13 @@ import { cn } from "../lib/utils";
 // --- Visual Components ---
 
 const AvailabilityVisual = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900/50 rounded-xl p-6 relative">
       <div className="w-full max-w-xs space-y-3">
         <div className="flex justify-between items-center mb-4">
-          <span className="text-zinc-400 text-xs font-mono">Available Slots</span>
+          <span className="text-zinc-400 text-xs font-mono">{t('useCases.visuals.available')}</span>
           <span className="text-emerald-400 text-xs font-mono">2024-06-01</span>
         </div>
         
@@ -55,7 +58,7 @@ const AvailabilityVisual = () => {
               "text-xs font-medium px-2 py-0.5 rounded",
               slot.status === "full" ? "text-red-400 bg-red-500/10" : "text-zinc-400 bg-zinc-800"
             )}>
-              {slot.slots} left
+              {slot.slots} {t('useCases.visuals.left')}
             </span>
           </motion.div>
         ))}
@@ -65,6 +68,8 @@ const AvailabilityVisual = () => {
 };
 
 const CarRentalVisual = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900/50 rounded-xl p-6 relative overflow-hidden">
       {/* Road/Parking Spot */}
@@ -98,13 +103,15 @@ const CarRentalVisual = () => {
         className="absolute top-6 right-6 flex items-center gap-2 bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/30"
       >
         <CheckCircle2 size={14} />
-        <span className="text-xs font-bold uppercase tracking-wider">Booked</span>
+        <span className="text-xs font-bold uppercase tracking-wider">{t('useCases.visuals.booked')}</span>
       </motion.div>
     </div>
   );
 };
 
 const HealthcareVisual = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900/50 rounded-xl p-6 gap-6 relative">
       <div className="flex gap-4 items-center z-10">
@@ -150,13 +157,14 @@ const HealthcareVisual = () => {
         className="flex items-center gap-2 text-zinc-500 bg-zinc-900/80 px-4 py-2 rounded-full border border-zinc-800"
       >
         <Lock size={14} className="text-emerald-500" />
-        <span className="text-xs font-mono">ATOMIC TRANSACTION</span>
+        <span className="text-xs font-mono">{t('useCases.visuals.atomic')}</span>
       </motion.div>
     </div>
   );
 };
 
 const CourseVisual = () => {
+  const { t } = useTranslation();
   const [count, setCount] = useState(50);
 
   useEffect(() => {
@@ -168,9 +176,9 @@ const CourseVisual = () => {
 
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900/50 rounded-xl p-6 relative">
-      <div className="w-full max-w-[200px] space-y-4">
+      <div className="w-full max-w-50 space-y-4">
         <div className="flex justify-between items-end">
-          <span className="text-zinc-400 text-sm font-medium">Webinar Capacity</span>
+          <span className="text-zinc-400 text-sm font-medium">{t('useCases.visuals.capacity')}</span>
           <span className="text-emerald-400 font-mono text-xl font-bold">{count}<span className="text-zinc-600 text-sm">/50</span></span>
         </div>
         
@@ -179,7 +187,7 @@ const CourseVisual = () => {
           <motion.div 
             animate={{ width: `${(count / 50) * 100}%` }}
             transition={{ type: "spring", stiffness: 100 }}
-            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-full"
+            className="absolute left-0 top-0 bottom-0 bg-linear-to-r from-emerald-600 to-emerald-400 rounded-full"
           />
         </div>
 
@@ -206,6 +214,7 @@ const CourseVisual = () => {
 };
 
 const SaasVisual = () => {
+  const { t } = useTranslation();
   const [tenant, setTenant] = useState<'A' | 'B'>('A');
 
   useEffect(() => {
@@ -260,13 +269,15 @@ const SaasVisual = () => {
       
       <div className="absolute -bottom-2 flex gap-2">
         <ShieldCheck size={16} className="text-emerald-500" />
-        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold">Strict Isolation</span>
+        <span className="text-[10px] text-zinc-500 uppercase tracking-widest font-semibold">{t('useCases.visuals.isolation')}</span>
       </div>
     </div>
   );
 };
 
 const RecurringVisual = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="h-full w-full flex flex-col items-center justify-center bg-zinc-900/50 rounded-xl p-6 relative">
       <div className="grid grid-cols-7 gap-2">
@@ -313,7 +324,7 @@ const RecurringVisual = () => {
         className="absolute bottom-4 bg-zinc-800/80 backdrop-blur px-3 py-1.5 rounded-full border border-zinc-700 flex items-center gap-2"
       >
         <Repeat size={12} className="text-emerald-400" />
-        <span className="text-[10px] text-zinc-300 font-mono">Every Wednesday</span>
+        <span className="text-[10px] text-zinc-300 font-mono">{t('useCases.visuals.recurring')}</span>
       </motion.div>
     </div>
   );
@@ -321,14 +332,18 @@ const RecurringVisual = () => {
 
 // --- Main Data ---
 
-const useCases = [
-  {
-    id: "car",
-    label: "Car Rental",
-    icon: Car,
-    description: "Individual booking with strict 1-unit capacity. Ideal for fleets, rentals, and equipment.",
-    visual: CarRentalVisual,
-    code: `// Scenario A: Book a specific Car
+export function UseCasesSection() {
+  const { t } = useTranslation();
+  const [activeTabId, setActiveTabId] = useState("car");
+
+  const useCases = [
+    {
+      id: "car",
+      label: t('useCases.tabs.car.label'),
+      icon: Car,
+      description: t('useCases.tabs.car.description'),
+      visual: CarRentalVisual,
+      code: `// Scenario A: Book a specific Car
 await createBooking({
   resourceId: "res_tesla_42",
   start: "2024-06-01T10:00:00Z",
@@ -339,14 +354,14 @@ await createBooking({
     insurance: "full"
   }
 })`
-  },
-  {
-    id: "health",
-    label: "Healthcare",
-    icon: Stethoscope,
-    description: "Atomic group bookings. Reserve a Doctor and a Room simultaneously. If one fails, both fail.",
-    visual: HealthcareVisual,
-    code: `// Scenario B: Atomic Group Booking
+    },
+    {
+      id: "health",
+      label: t('useCases.tabs.health.label'),
+      icon: Stethoscope,
+      description: t('useCases.tabs.health.description'),
+      visual: HealthcareVisual,
+      code: `// Scenario B: Atomic Group Booking
 await createGroupBooking({
   projectId: "proj_hospital_A",
   bookings: [
@@ -364,14 +379,14 @@ await createGroupBooking({
     }
   ]
 })`
-  },
-  {
-    id: "course",
-    label: "Digital Course",
-    icon: Users,
-    description: "High capacity resources. Manage webinars, events, or classes with automatic seat tracking.",
-    visual: CourseVisual,
-    code: `// Scenario C: High Capacity Event
+    },
+    {
+      id: "course",
+      label: t('useCases.tabs.course.label'),
+      icon: Users,
+      description: t('useCases.tabs.course.description'),
+      visual: CourseVisual,
+      code: `// Scenario C: High Capacity Event
 await createBooking({
   resourceId: "res_webinar_01",
   start: "2024-06-10T18:00:00Z",
@@ -382,14 +397,14 @@ await createBooking({
     email: "student@edu.com"
   }
 })`
-  },
-  {
-    id: "saas",
-    label: "SaaS Platform",
-    icon: Building2,
-    description: "Multi-tenant architecture. Isolate customer data using Projects. One API, infinite tenants.",
-    visual: SaasVisual,
-    code: `// Scenario D: Multi-Tenant Setup
+    },
+    {
+      id: "saas",
+      label: t('useCases.tabs.saas.label'),
+      icon: Building2,
+      description: t('useCases.tabs.saas.description'),
+      visual: SaasVisual,
+      code: `// Scenario D: Multi-Tenant Setup
 
 // 1. Create Tenant (Project)
 const project = await createProject({
@@ -405,14 +420,14 @@ const client = new DispoClient({
 await client.createResource({
   name: "Stylist Sarah"
 })`
-  },
-  {
-    id: "recurring",
-    label: "Recurring Booking",
-    icon: Repeat,
-    description: "Create a series of bookings in one atomic request. Perfect for weekly meetings or monthly subscriptions.",
-    visual: RecurringVisual,
-    code: `// Scenario E: Recurring Meeting
+    },
+    {
+      id: "recurring",
+      label: t('useCases.tabs.recurring.label'),
+      icon: Repeat,
+      description: t('useCases.tabs.recurring.description'),
+      visual: RecurringVisual,
+      code: `// Scenario E: Recurring Meeting
 await createRecurringBooking({
   resourceId: "res_room_b",
   start: "2024-02-01T10:00:00Z", // First slot start
@@ -426,14 +441,14 @@ await createRecurringBooking({
   }
 })
 // -> Returns ["id_1", "id_2", ... "id_10"]`
-  },
-  {
-    id: "availability",
-    label: "Availability Check",
-    icon: CalendarCheck,
-    description: "Query availability for a specific range. Perfect for building calendars and scheduling UIs.",
-    visual: AvailabilityVisual,
-    code: `// Scenario F: Check Availability
+    },
+    {
+      id: "availability",
+      label: t('useCases.tabs.availability.label'),
+      icon: CalendarCheck,
+      description: t('useCases.tabs.availability.description'),
+      visual: AvailabilityVisual,
+      code: `// Scenario F: Check Availability
 const slots = await getAvailability({
   resourceId: "res_consultant_01",
   start: "2024-06-01T09:00:00Z",
@@ -447,19 +462,18 @@ const slots = await getAvailability({
 //   { start: "...", end: "...", available: 2 },
 //   ...
 // ]`
-  }
-];
+    }
+  ];
 
-export function UseCasesSection() {
-  const [activeTab, setActiveTab] = useState(useCases[0]);
+  const activeTab = useCases.find(uc => uc.id === activeTabId) || useCases[0];
 
   return (
     <div className="py-24 bg-[#0a0a0a] border-t border-white/5">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold mb-4 text-white">Built for any booking scenario</h2>
+          <h2 className="text-3xl font-bold mb-4 text-white">{t('useCases.header.title')}</h2>
           <p className="text-zinc-400 max-w-2xl mx-auto">
-            From atomic transactions to multi-tenant isolation, dispo.now adapts to your domain model.
+            {t('useCases.header.subtitle')}
           </p>
         </div>
 
@@ -468,8 +482,9 @@ export function UseCasesSection() {
           <div className="lg:col-span-4 space-y-3">
             {useCases.map((useCase) => (
               <button
+                type="button"
                 key={useCase.id}
-                onClick={() => setActiveTab(useCase)}
+                onClick={() => setActiveTabId(useCase.id)}
                 className={cn(
                   "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all duration-300 border group",
                   activeTab.id === useCase.id
@@ -503,7 +518,7 @@ export function UseCasesSection() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
-                className="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full min-h-[500px]"
+                className="bg-[#111] border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full min-h-125"
               >
                 {/* Visual Section (Top/Left) */}
                 <div className="md:w-1/2 border-b md:border-b-0 md:border-r border-zinc-800 bg-zinc-900/20 p-6 flex flex-col">
@@ -517,7 +532,7 @@ export function UseCasesSection() {
                     </p>
                   </div>
                   
-                  <div className="flex-1 min-h-[250px] relative">
+                  <div className="flex-1 min-h-62.5 relative">
                     <activeTab.visual />
                   </div>
                 </div>

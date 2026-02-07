@@ -1,12 +1,8 @@
 import { OpenAPIHono, createRoute } from 'npm:@hono/zod-openapi'
 import { z } from '@/app/zod.ts'
-import { container } from '@/container/index.ts'
-import { hybridAuthMiddleware } from '../middlewares/hybridAuth.ts'
-import { CreateBookingUseCase } from '@/core/application/usecases/CreateBookingUseCase.ts'
-import { CreateGroupBookingUseCase } from '@/core/application/usecases/CreateGroupBookingUseCase.ts'
-import { CreateRecurringBookingUseCase } from '@/core/application/usecases/CreateRecurringBookingUseCase.ts'
-import { CancelBookingUseCase } from '@/core/application/usecases/CancelBookingUseCase.ts'
+import { loadDeps } from '@/core/container/index.ts'
 import { HonoEnv } from '../types.ts'
+import { hybridAuthMiddleware } from "../middlewares/hybridAuth.ts";
 
 const bookings = new OpenAPIHono<HonoEnv>()
 
@@ -100,7 +96,7 @@ bookings.openapi(
       return c.json({ error: 'Forbidden: ProjectId mismatch' }, 403)
     }
 
-    const useCase = container.get('CreateBookingUseCase') as CreateBookingUseCase
+    const useCase = loadDeps('CreateBookingUseCase')
     
     const result = await useCase.execute({
       projectId: authenticatedProjectId,
@@ -162,7 +158,7 @@ bookings.openapi(
       return c.json({ error: 'Forbidden: ProjectId mismatch' }, 403)
     }
 
-    const useCase = container.get('CreateGroupBookingUseCase') as CreateGroupBookingUseCase
+    const useCase = loadDeps('CreateGroupBookingUseCase')
     
     const result = await useCase.execute({
       projectId: authenticatedProjectId,
@@ -208,7 +204,7 @@ bookings.openapi(
       },
       401: { description: 'Unauthorized' },
       403: { description: 'Forbidden' },
-      409: { description: 'Capacity Exceeded for one or more slots' }
+      409: { description: 'Capacity Exceeded for one or more slots' },
     }
   }),
   async (c) => {
@@ -220,7 +216,7 @@ bookings.openapi(
       return c.json({ error: 'Forbidden: ProjectId mismatch' }, 403)
     }
 
-    const useCase = container.get('CreateRecurringBookingUseCase') as CreateRecurringBookingUseCase
+    const useCase = loadDeps('CreateRecurringBookingUseCase')
     
     try {
       const result = await useCase.execute({
@@ -275,7 +271,7 @@ bookings.openapi(
     const authenticatedProjectId = c.get('projectId')
     if (!authenticatedProjectId) return c.json({ error: 'Unauthorized' }, 401)
     
-    const useCase = container.get('CancelBookingUseCase') as CancelBookingUseCase
+    const useCase = loadDeps('CancelBookingUseCase')
     
     await useCase.execute(id, authenticatedProjectId)
     

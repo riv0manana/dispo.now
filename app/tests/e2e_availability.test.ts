@@ -11,14 +11,14 @@ Deno.test('E2E: Availability Check', async (t) => {
   // 1. Setup (Signup, Login, Create Project, Create Resource)
   await t.step('Setup', async () => {
     // Signup
-    await app.request('/users', {
+    await app.request('/api/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password: 'password123' })
     })
 
     // Login
-    const loginRes = await app.request('/users/login', {
+    const loginRes = await app.request('/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password: 'password123' })
@@ -26,7 +26,7 @@ Deno.test('E2E: Availability Check', async (t) => {
     token = (await loginRes.json()).token
 
     // Create Project
-    const projRes = await app.request('/projects', {
+    const projRes = await app.request('/api/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ name: 'Avail Project', metadata: {} })
@@ -36,7 +36,7 @@ Deno.test('E2E: Availability Check', async (t) => {
     projectId = projBody.id
 
     // Create Resource (Capacity 2)
-    const resRes = await app.request('/resources', {
+    const resRes = await app.request('/api/resources', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
       body: JSON.stringify({
@@ -50,7 +50,7 @@ Deno.test('E2E: Availability Check', async (t) => {
 
   // 2. Book 1 Slot
   await t.step('Book Slot', async () => {
-    const res = await app.request('/bookings', {
+    const res = await app.request('/api/bookings', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey },
       body: JSON.stringify({
@@ -71,7 +71,7 @@ Deno.test('E2E: Availability Check', async (t) => {
     
     // Using API Key (Consumer context)
     const res = await app.request(
-      `/resources/${resourceId}/availability?start=${start}&end=${end}&slotDurationMinutes=60`, 
+      `/api/resources/${resourceId}/availability?start=${start}&end=${end}&slotDurationMinutes=60`, 
       {
         method: 'GET',
         headers: { 'x-api-key': apiKey }

@@ -1,12 +1,15 @@
 import { assertEquals, assertRejects } from 'std/assert/mod.ts'
-import { GetAvailabilityUseCase } from '@/core/application/usecases/GetAvailabilityUseCase.ts'
+import { loadDeps } from '@/container/index.ts'
 import { FakeBookingRepository } from '@/core/tests/fakes/FakeBookingRepository.ts'
 import { FakeResourceRepository } from '@/core/tests/fakes/FakeResourceRepository.ts'
 
 Deno.test('GetAvailability: Basic Slots', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new GetAvailabilityUseCase(resourceRepo, bookingRepo)
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetAvailabilityUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
 
@@ -25,9 +28,12 @@ Deno.test('GetAvailability: Basic Slots', async () => {
 })
 
 Deno.test('GetAvailability: Capacity Reduction', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new GetAvailabilityUseCase(resourceRepo, bookingRepo)
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetAvailabilityUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 5, metadata: {} })
   
@@ -59,9 +65,12 @@ Deno.test('GetAvailability: Capacity Reduction', async () => {
 })
 
 Deno.test('GetAvailability: Respects Operating Hours', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new GetAvailabilityUseCase(resourceRepo, bookingRepo)
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetAvailabilityUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({
     id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {},
@@ -87,9 +96,12 @@ Deno.test('GetAvailability: Respects Operating Hours', async () => {
 })
 
 Deno.test('GetAvailability: Respects Closed Days', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new GetAvailabilityUseCase(resourceRepo, bookingRepo)
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetAvailabilityUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({
     id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {},
@@ -111,9 +123,12 @@ Deno.test('GetAvailability: Respects Closed Days', async () => {
 })
 
 Deno.test('GetAvailability: Security Check', async () => {
-  const bookingRepo = new FakeBookingRepository()
-  const resourceRepo = new FakeResourceRepository()
-  const uc = new GetAvailabilityUseCase(resourceRepo, bookingRepo)
+  const bookingRepo = loadDeps('BookingRepository') as FakeBookingRepository
+  const resourceRepo = loadDeps('ResourceRepository') as FakeResourceRepository
+  const uc = loadDeps('GetAvailabilityUseCase')
+  
+  bookingRepo.clear()
+  resourceRepo.clear()
 
   await resourceRepo.save({ id: 'r1', projectId: 'p1', name: 'R1', defaultCapacity: 1, metadata: {} })
 

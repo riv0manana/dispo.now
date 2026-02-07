@@ -5,7 +5,7 @@
   "deno.config": "./deno.json",
   "editor.defaultFormatter": "denoland.vscode-deno",
   "[typescript]": {
-    "editor.defaultFormatter": "denoland.vscode-deno"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"

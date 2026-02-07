@@ -50,7 +50,7 @@ const content = {
         <ul className="list-disc pl-5 mb-4 space-y-2 text-zinc-400">
           <li>
             <strong className="text-white">Bearer Token (JWT)</strong>: Used for management operations (Creating Projects, listing all resources). 
-            Obtained via the <code>/users/login</code> endpoint.
+            Obtained via the <code>/api/users/login</code> endpoint.
           </li>
           <li>
             <strong className="text-white">API Key (x-api-key)</strong>: Used for runtime operations (Creating Resources, Bookings). 
@@ -108,13 +108,13 @@ const admin = new DispoClient({
       {
         lang: "json",
         title: "JSON Payload",
-        content: `// POST /users (Register)
+        content: `// POST /api/users (Register)
 {
   "email": "dev@example.com",
   "password": "securepassword"
 }
 
-// POST /users/login (Login)
+// POST /api/users/login (Login)
 {
   "email": "dev@example.com",
   "password": "securepassword"
@@ -151,10 +151,10 @@ const { token } = await client.login(
         </p>
         <h3 className="text-lg font-bold text-white mt-6 mb-2">Operations</h3>
         <ul className="list-disc pl-5 space-y-2 text-zinc-400">
-          <li><strong>POST /projects</strong>: Create a new project. Returns API Key.</li>
-          <li><strong>GET /projects</strong>: List all your projects.</li>
-          <li><strong>PATCH /projects/:id</strong>: Update project details.</li>
-          <li><strong>DELETE /projects/:id</strong>: Delete a project.</li>
+          <li><strong>POST /api/projects</strong>: Create a new project. Returns API Key.</li>
+          <li><strong>GET /api/projects</strong>: List all your projects.</li>
+          <li><strong>PATCH /api/projects/:id</strong>: Update project details.</li>
+          <li><strong>DELETE /api/projects/:id</strong>: Delete a project.</li>
         </ul>
       </>
     ),
@@ -162,7 +162,7 @@ const { token } = await client.login(
       {
         lang: "json",
         title: "JSON Payload",
-        content: `// POST /projects
+        content: `// POST /api/projects
 {
   "name": "My SaaS Tenant",
   "metadata": { "plan": "premium" }
@@ -200,9 +200,9 @@ const projects = await admin.getProjects();`
         </p>
         <h3 className="text-lg font-bold text-white mt-6 mb-2">Operations</h3>
         <ul className="list-disc pl-5 space-y-2 text-zinc-400">
-          <li><strong>POST /resources</strong>: Create a resource.</li>
-          <li><strong>PATCH /resources/:id</strong>: Update a resource.</li>
-          <li><strong>DELETE /resources/:id</strong>: Delete a resource.</li>
+          <li><strong>POST /api/resources</strong>: Create a resource.</li>
+          <li><strong>PATCH /api/resources/:id</strong>: Update a resource.</li>
+          <li><strong>DELETE /api/resources/:id</strong>: Delete a resource.</li>
         </ul>
       </>
     ),
@@ -210,7 +210,7 @@ const projects = await admin.getProjects();`
       {
         lang: "json",
         title: "JSON Payload",
-        content: `// POST /resources
+        content: `// POST /api/resources
 {
   "name": "Conference Room A",
   "defaultCapacity": 10,
@@ -273,7 +273,7 @@ const projects = await admin.getProjects();`
       {
         lang: "json",
         title: "REST / Curl",
-        content: `GET /resources/:id/availability
+        content: `GET /api/resources/:id/availability
 ?start=2024-01-01T00:00:00Z
 &end=2024-01-01T23:59:59Z
 &slotDurationMinutes=60
@@ -336,7 +336,7 @@ const projects = await admin.getProjects();`
       {
         lang: "json",
         title: "JSON Payload",
-        content: `// POST /bookings (Single)
+        content: `// POST /api/bookings (Single)
 {
   "resourceId": "res_456",
   "start": "2024-01-01T10:00:00Z",
@@ -345,7 +345,7 @@ const projects = await admin.getProjects();`
   "metadata": { "bookedBy": "user@example.com" }
 }
 
-// POST /bookings/group (Atomic Batch)
+// POST /api/bookings/group (Atomic Batch)
 {
   "bookings": [
     {
@@ -392,19 +392,44 @@ await dispo.createGroupBooking({
         <div className="space-y-4">
           <div>
             <h4 className="font-bold text-red-400">409 Conflict</h4>
-            <p className="text-sm text-zinc-400"><code>CapacityExceeded</code> - The resource does not have enough availability for the requested time/quantity.</p>
+            <p className="text-sm text-zinc-400">
+              <code>CapacityExceeded</code> - The resource does not have enough availability for the requested time/quantity.
+            </p>
           </div>
           <div>
             <h4 className="font-bold text-amber-400">400 Bad Request</h4>
             <p className="text-sm text-zinc-400">
               <code>InvalidTimeRange</code> - Start time is after end time, or duration is zero.<br/>
+              <code>BookingAlreadyCancelled</code> - Attempting to cancel an already cancelled booking.<br/>
               <code>DayNotAllowed</code> - Booking attempts to start/end on a closed day.<br/>
-              <code>StartTimeOutsideConfig</code> - Start time is outside daily operating hours.
+              <code>StartTimeOutsideConfig</code> - Start time is outside daily operating hours.<br/>
+              <code>EndTimeOutsideConfig</code> - End time is outside daily operating hours.<br/>
+              <code>BookingSpansClosedHours</code> - Booking overlaps a closed period.
+              <code>ValidationError</code> - Input payload fails validation. The response includes an <code>issues</code> array with details.
             </p>
           </div>
           <div>
             <h4 className="font-bold text-zinc-400">401 Unauthorized</h4>
             <p className="text-sm text-zinc-400">Missing or invalid API Key / Token.</p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">403 Forbidden</h4>
+            <p className="text-sm text-zinc-400">
+              Accessing a resource or booking that does not belong to the authenticated project.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">404 Not Found</h4>
+            <p className="text-sm text-zinc-400">
+              Resource or booking does not exist (e.g. wrong id).
+            </p>
+          </div>
+          <div>
+            <h4 className="font-bold text-zinc-400">500 InternalServerError</h4>
+            <p className="text-sm text-zinc-400">
+              Unexpected error. In production, the response is minimal (<code>{"{ \"error\": \"InternalServerError\" }"}</code>);
+              in non-production it may include a <code>message</code> field for debugging.
+            </p>
           </div>
         </div>
       </>
@@ -415,6 +440,17 @@ await dispo.createGroupBooking({
         title: "Error Response",
         content: `{
   "error": "CapacityExceeded"
+}
+
+// Validation Error
+{
+  "error": "ValidationError",
+  "issues": [
+    {
+      "path": ["start"],
+      "message": "Invalid ISO date"
+    }
+  ]
 }`
       }
     ]
@@ -438,6 +474,7 @@ function CodeBlock({ codes }: { codes: { lang: string, title: string, content: s
       <div className="flex items-center bg-[#252526] border-b border-zinc-800">
         {codes.map((code, index) => (
           <button
+            type="button"
             key={index}
             onClick={() => setActiveTab(index)}
             className={cn(
@@ -451,11 +488,11 @@ function CodeBlock({ codes }: { codes: { lang: string, title: string, content: s
           </button>
         ))}
         <div className="flex-1"></div>
-        <button onClick={handleCopy} className="p-2 text-zinc-500 hover:text-white transition-colors">
+        <button type="button" onClick={handleCopy} className="p-2 text-zinc-500 hover:text-white transition-colors">
           {copied ? <Check size={14} /> : <Copy size={14} />}
         </button>
       </div>
-      <div className="p-4 overflow-x-auto min-h-[150px]">
+      <div className="p-4 overflow-x-auto min-h-37.5">
         <pre className="font-mono text-sm leading-relaxed text-zinc-300">
           <code className="table w-full">
             {activeCode.content.split('\n').map((line, i) => (
@@ -506,7 +543,7 @@ export function DocsRoute() {
         </div>
       </header>
 
-      <div className="flex pt-16 max-w-[1440px] mx-auto">
+      <div className="flex pt-16 max-w-360 mx-auto">
         {/* Sidebar */}
         <nav className="w-64 fixed top-16 bottom-0 left-0 overflow-y-auto border-r border-zinc-800 bg-[#0F0F0F] hidden lg:block">
           <div className="p-6 space-y-1">
