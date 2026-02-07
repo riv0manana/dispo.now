@@ -1,6 +1,7 @@
 import { LazyMotion, domAnimation } from "framer-motion";
 import { LandingNavbar } from "../ui/molecules/LandingNavbar";
 import { LandingFooter } from "../ui/organisms/LandingFooter";
+import { ScrollToTopButton } from "../ui/atoms/ScrollToTopButton";
 import { SEO } from "../SEO";
 
 interface LandingTemplateProps {
@@ -17,6 +18,7 @@ export function LandingTemplate({ children }: LandingTemplateProps) {
           {children}
         </main>
         <LandingFooter />
+        <ScrollToTopButton />
       </div>
     </LazyMotion>
   );

@@ -25,6 +25,97 @@ export const en = {
         getApiKey: "Get API Key"
       }
     },
+    workflow: {
+      title: "dispo.now handles availability and booking.",
+      subtitle: "You handle the product, payments, and experience.",
+      nodes: {
+        app: "Your App",
+        booking: "Booking Scheduler",
+        payment: "Payments",
+        auth: "Auth",
+        db: "Database"
+      }
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      items: [
+        {
+          id: "what-is-dispo-now",
+          question: "What is dispo.now?",
+          answer: "dispo.now is an open-source availability and reservation infrastructure. It handles time, capacity, and booking consistency so you can focus on your product, payments, and user experience."
+        },
+        {
+          id: "what-problems-does-it-solve",
+          question: "What problems does dispo.now solve?",
+          answer: "It solves the hardest parts of booking systems: availability calculation, conflict prevention, concurrency, and reservation consistency across complex scenarios like rentals, shared resources, and time-based bookings."
+        },
+        {
+          id: "what-dispo-now-does-not-do",
+          question: "What does dispo.now intentionally NOT do?",
+          answer: "dispo.now does not handle authentication, payments, pricing logic, emails, or business-specific workflows. These concerns are left to your application by design."
+        },
+        {
+          id: "who-is-it-for",
+          question: "Who is dispo.now for?",
+          answer: "dispo.now is built for developers and teams building custom products that require bookings or reservations, such as rentals, marketplaces, scheduling platforms, or internal tools."
+        },
+        {
+          id: "is-it-a-saas",
+          question: "Is dispo.now a SaaS?",
+          answer: "No. dispo.now is self-hosted and open-source. You run it on your own infrastructure, with no per-booking fees, usage limits, or vendor lock-in."
+        },
+        {
+          id: "how-does-it-compare-to-calendly",
+          question: "How is dispo.now different from Calendly or similar tools?",
+          answer: "Calendly-style tools are end-user products with opinionated workflows. dispo.now is infrastructure. It provides booking primitives and APIs so you can build your own workflows, UI, and logic."
+        },
+        {
+          id: "how-does-it-compare-to-cal-com",
+          question: "How is dispo.now different from Cal.com?",
+          answer: "Cal.com focuses on scheduling meetings. dispo.now focuses on availability and reservations as a system component, supporting rentals, capacity-based bookings, shared resources, and custom business rules."
+        },
+        {
+          id: "can-i-use-it-with-stripe",
+          question: "Can I use dispo.now with Stripe?",
+          answer: "Yes. dispo.now is commonly used alongside Stripe for payments. dispo.now handles availability and reservations, while Stripe handles pricing, payments, and billing."
+        },
+        {
+          id: "can-i-use-my-own-auth",
+          question: "Can I use my own authentication system?",
+          answer: "Yes. dispo.now is auth-agnostic. You can use Clerk, Auth0, custom JWTs, or any authentication system that fits your architecture."
+        },
+        {
+          id: "how-do-i-store-business-data",
+          question: "Where should I store my business and domain data?",
+          answer: "Your business data stays in your own database. dispo.now stores only what is required to manage availability and reservations."
+        },
+        {
+          id: "does-it-support-multiple-projects",
+          question: "Does dispo.now support multiple projects or tenants?",
+          answer: "Yes. dispo.now supports project isolation, allowing you to manage multiple products, environments, or tenants from a single instance."
+        },
+        {
+          id: "is-it-production-ready",
+          question: "Is dispo.now production-ready?",
+          answer: "Yes. dispo.now is designed to be deterministic, consistent, and safe under concurrent usage, making it suitable for production workloads."
+        },
+        {
+          id: "can-i-extend-booking-types",
+          question: "Can I create custom booking types?",
+          answer: "Yes. dispo.now provides flexible primitives that allow you to model different booking types such as rooms, vehicles, items, time slots, or hybrid scenarios."
+        },
+        {
+          id: "how-does-it-scale",
+          question: "How does dispo.now scale?",
+          answer: "dispo.now scales horizontally and can be deployed using Docker in modern cloud environments. You control performance, scaling, and infrastructure choices."
+        },
+        {
+          id: "why-open-source",
+          question: "Why is dispo.now open-source?",
+          answer: "Because availability and booking logic is core infrastructure. Open-source ensures transparency, extensibility, and long-term control for teams building serious products."
+        }
+      ]
+    },
     features: {
       header: {
         title: "Built for <1>CTOs</1> who scale, and <3>Devs</3> who ship.",
@@ -33,7 +124,7 @@ export const en = {
       cards: {
         resource: {
           title: "Resource Agnostic",
-          subtitle: "Flexible by Design.",
+          subtitle: "Flexible by design, strict by nature.",
           tagline: "Don't fight the framework.",
           description: "Book rooms, equipment, doctors, or server slots. Our domain model is abstract enough to handle any bookable entity, yet strict enough to enforce validity.",
           tags: ["Universal Model", "Custom Metadata", "Any Asset"]
@@ -47,7 +138,7 @@ export const en = {
         },
         dx: {
           title: "DX First",
-          subtitle: "Flexible by Design.",
+          subtitle: "Integration in minutes.",
           tagline: "Because your time matters.",
           description: "Fully typed TypeScript SDKs, comprehensive OpenAPI documentation, and a developer dashboard that respects your workflow. Integration takes minutes, not weeks.",
           tags: ["TypeScript", "OpenAPI", "Webhooks"]

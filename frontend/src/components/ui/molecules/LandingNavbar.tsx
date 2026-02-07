@@ -13,13 +13,27 @@ export function LandingNavbar() {
       transition={{ duration: 0.5 }}
       className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 bg-[#0F0F0F]/80 backdrop-blur-md z-50"
     >
-      <div className="font-mono font-bold text-lg tracking-tight flex gap-2 items-center text-white">
+      <div className="font-mono font-bold text-lg tracking-tight flex gap-2 items-center text-white cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
         <img src="/logo.svg" alt="dispo.now" className="h-8 w-auto" />
         dispo.now
       </div>
+
+      {/* Desktop Navigation */}
+      <div className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-400">
+        <button onClick={() => document.getElementById('workflow')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">
+          {t('nav.workflow', 'Workflow')}
+        </button>
+        <button onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">
+          {t('nav.features', 'Features')}
+        </button>
+        <button onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })} className="hover:text-white transition-colors">
+          {t('nav.faq', 'FAQ')}
+        </button>
+      </div>
+
       <div className="flex gap-4 text-sm font-medium text-zinc-400 items-center">
-        <Link to="/docs" className="hover:text-white transition-colors">{t('nav.docs')}</Link>
-        <a href="https://github.com/riv0manana/dispo.now" className="hover:text-white transition-colors">{t('nav.github')}</a>
+        <Link to="/docs" className="hidden md:block hover:text-white transition-colors">{t('nav.docs')}</Link>
+        <a href="https://github.com/riv0manana/dispo.now" className="hidden md:block hover:text-white transition-colors">{t('nav.github')}</a>
         <Link to="/dashboard" className="text-white hover:underline decoration-emerald-500 underline-offset-4 ml-2">
           {t('nav.login')}
         </Link>
