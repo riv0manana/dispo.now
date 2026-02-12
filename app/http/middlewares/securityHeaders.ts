@@ -11,7 +11,7 @@ export const securityHeaders = async (c: Context, next: Next) => {
     c.header("Referrer-Policy", "strict-origin-when-cross-origin")
     c.header(
       "Content-Security-Policy",
-      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'"
+      "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self'; connect-src 'self'"
     )
     c.header("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
   }
